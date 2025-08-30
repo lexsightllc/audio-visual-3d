@@ -1,0 +1,43 @@
+# Auto detect text files and perform LF normalization
+* text=auto eol=lf
+
+# Explicitly declare text files that should always be normalized
+*.css text
+*.html text
+*.js text
+*.json text
+*.md text
+*.ts text
+*.tsx text
+*.vue text
+*.yaml text
+*.yml text
+
+# Binary files that should not be modified
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.svg binary
+*.ttf binary
+*.woff binary
+*.woff2 binary
+*.eot binary
+*.mp4 binary
+*.webm binary
+*.wav binary
+*.mp3 binary
+*.m4a binary
+*.ogg binary
+*.pdf binary
+*.zip binary
+*.gz binary
+*.tar binary
+*.7z binary
+*.dmg binary
+*.pkg binary
+*.exe binary
+*.dll binary
+*.so binary
+*.dylib binary
