@@ -13,6 +13,7 @@ import {Analyser} from './analyser';
 
 // Three.js Core
 import * as THREE from 'three';
+import { createRenderer } from './renderer';
 
 // Import specific types from three
 
@@ -77,8 +78,7 @@ export class GdmLiveAudioVisuals3D extends LitElement {
   private controlPointsTexture!: THREE.Data3DTexture;
   private inputAnalyser!: Analyser;
   private outputAnalyser!: Analyser;
-  private prevTime = 0;
-  private startTime = 0;
+  private start = 0;
   private lancetas!: THREE.InstancedMesh;
 
   // The conductor state is the smoothly interpolated, per-frame state used for rendering.
@@ -173,18 +173,7 @@ export class GdmLiveAudioVisuals3D extends LitElement {
     camera.position.set(0, 0, 4);
     this.camera = camera;
 
-    this.renderer = new THREE.WebGLRenderer({
-      canvas: this.canvas,
-      antialias: false,
-      powerPreference: 'high-performance',
-      alpha: false,
-    });
-    this.renderer.setSize(window.innerWidth, window.innerHeight);
-    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    // Set tone mapping with proper type assertion
-    this.renderer.toneMapping = THREE.ACESFilmicToneMapping as THREE.ToneMapping;
-    // Set output color space for proper color handling
-    this.renderer.outputColorSpace = THREE.SRGBColorSpace;
+    this.renderer = createRenderer(this.canvas);
 
     this.controls = new OrbitControls(camera, this.renderer.domElement);
     this.controls.enableDamping = true;
@@ -319,9 +308,8 @@ export class GdmLiveAudioVisuals3D extends LitElement {
 
     window.addEventListener('resize', onWindowResize.bind(this));
     onWindowResize();
-    this.startTime = performance.now();
-    this.prevTime = this.startTime;
-    this.animation();
+    this.start = performance.now();
+    requestAnimationFrame(this.animate);
   }
 
   /**
@@ -407,11 +395,8 @@ export class GdmLiveAudioVisuals3D extends LitElement {
     }
   }
 
-  private animation = () => {
-    const now = performance.now();
-    const t = now - this.startTime;
-    const deltaTime = now - this.prevTime;
-    this.prevTime = now;
+  private animate = (now: number) => {
+    const t = now - this.start;
     this.conductorState.time = t;
 
     const material = this.backdrop.material as THREE.ShaderMaterial;
@@ -449,7 +434,7 @@ export class GdmLiveAudioVisuals3D extends LitElement {
 
     this.controls.update();
     this.composer.render();
-    requestAnimationFrame(this.animation);
+    requestAnimationFrame(this.animate);
   };
 
   protected firstUpdated() {
@@ -458,7 +443,7 @@ export class GdmLiveAudioVisuals3D extends LitElement {
     this.canvas = canvas;
     this.init();
     // Kick off the first intent.
-    this.createNewIntent(this.startTime);
+    this.createNewIntent(this.start);
   }
 
   protected render() {

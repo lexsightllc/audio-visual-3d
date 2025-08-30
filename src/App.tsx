@@ -5,6 +5,7 @@ import styles from './App.module.css';
 
 // Import Three.js with type information
 import * as THREE from 'three';
+import { createRenderer } from '../renderer';
 
 // Import specific types
 import type { WebGLRenderer as ThreeWebGLRenderer } from 'three';
@@ -104,9 +105,8 @@ const App = () => {
     camera.position.z = 5;
     
     // Renderer setup
-    const renderer = new THREE.WebGLRenderer({ antialias: true });
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setPixelRatio(window.devicePixelRatio);
+    const canvas = document.createElement('canvas');
+    const renderer = createRenderer(canvas);
     
     // Effect composer setup
     const composer = new EffectComposer(renderer);
@@ -142,8 +142,9 @@ const App = () => {
       renderer.setSize(window.innerWidth, window.innerHeight);
       composer.setSize(window.innerWidth, window.innerHeight);
     };
-    
+
     window.addEventListener('resize', handleResize);
+    handleResize();
     
     // Animation loop
     let firstFrame = true;
