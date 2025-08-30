@@ -35,7 +35,7 @@ const App: React.FC = () => {
   const [camera, setCamera] = useState<ThreeCamera | null>(null);
   const [renderer, setRenderer] = useState<ThreeRenderer | null>(null);
   const [composer, setComposer] = useState<EffectComposer | null>(null);
-  const [objects, setObjects] = useState<ThreeObject3D[]>([]);
+  const objectsRef = useRef<ThreeObject3D[]>([]);
   
   // Initialize Three.js scene
   useEffect(() => {
@@ -98,7 +98,7 @@ const App: React.FC = () => {
       requestAnimationFrame(animate);
       
       // Update objects
-      objects.forEach((obj: ThreeObject3D) => {
+      objectsRef.current.forEach((obj: ThreeObject3D) => {
         obj.rotation.x += 0.01;
         obj.rotation.y += 0.01;
       });
@@ -117,14 +117,14 @@ const App: React.FC = () => {
       }
       renderer.dispose();
     };
-  }, [objects]);
+  }, []);
   
   // Update scene based on audio analysis
   const updateScene = (control: SceneControl) => {
     if (!scene) return;
     
     // Clear previous objects
-    objects.forEach(obj => {
+    objectsRef.current.forEach(obj => {
       scene.remove(obj);
       if (obj instanceof THREE.Mesh) {
         obj.geometry.dispose();
@@ -209,8 +209,8 @@ const App: React.FC = () => {
     
     newObjects.push(light1, light2);
     
-    // Update state
-    setObjects(newObjects);
+    // Update object reference
+    objectsRef.current = newObjects;
   };
   
   useEffect(() => {
@@ -224,22 +224,21 @@ const App: React.FC = () => {
     });
     
     const mesh = new THREE.Mesh(geometry, material);
-    scene.add(mesh);
-    
-    setObjects(prev => [...prev, mesh]);
-    
-    // Add lights
     const ambientLight = new THREE.AmbientLight(0x404040);
-    scene.add(ambientLight);
-    
     const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
     directionalLight.position.set(1, 1, 1);
+
+    scene.add(mesh);
+    scene.add(ambientLight);
     scene.add(directionalLight);
-    
+
+    objectsRef.current = [...objectsRef.current, mesh, ambientLight, directionalLight];
+
     return () => {
       scene.remove(mesh);
       scene.remove(ambientLight);
       scene.remove(directionalLight);
+      objectsRef.current = objectsRef.current.filter(obj => obj !== mesh && obj !== ambientLight && obj !== directionalLight);
       geometry.dispose();
       material.dispose();
     };
