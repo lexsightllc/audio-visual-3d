@@ -9,6 +9,7 @@ export class AudioService {
   private peerConnection: RTCPeerConnection | null = null;
   private sessionId: string | null = null;
   private clientSecret: string | null = null;
+  private sceneControlDataChannel: RTCDataChannel | null = null;
 
   // Callbacks
   public onAudioChunk?: (chunk: Float32Array) => void;
@@ -116,9 +117,9 @@ export class AudioService {
       }
     };
 
-    // Handle data channel for scene control
-    const dataChannel = this.peerConnection.createDataChannel('scene-control');
-    dataChannel.onmessage = (event) => {
+    // Create a persistent data channel for scene control
+    this.sceneControlDataChannel = this.peerConnection.createDataChannel('scene-control');
+    this.sceneControlDataChannel.onmessage = (event) => {
       try {
         const data = JSON.parse(event.data);
         const result = validateSceneControl(data);
@@ -131,19 +132,26 @@ export class AudioService {
         log('error', 'Error parsing scene control data', { error: String(error) });
       }
     };
+    this.sceneControlDataChannel.onopen = () => {
+      log('info', 'Scene control data channel opened');
+    };
+    this.sceneControlDataChannel.onclose = () => {
+      log('info', 'Scene control data channel closed');
+      this.sceneControlDataChannel = null;
+    };
+    this.sceneControlDataChannel.onerror = (event) => {
+      log('error', 'Scene control data channel error', { error: (event as any).error });
+    };
 
     // Create and send offer
     const offer = await this.peerConnection.createOffer();
     await this.peerConnection.setLocalDescription(offer);
 
-    // Send SDP to OpenAI
-    const sdpResponse = await fetch('https://api.openai.com/v1/realtime/answer', {
+    // Proxy SDP exchange through backend to avoid exposing API key
+    const sdpResponse = await fetch('/api/openai/sdp-exchange', {
       method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${this.clientSecret}`,
-        'Content-Type': 'application/sdp'
-      },
-      body: offer.sdp
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ sessionId: this.sessionId, offerSdp: offer.sdp })
     });
 
     if (!sdpResponse.ok) {
@@ -151,10 +159,10 @@ export class AudioService {
       throw new Error(`SDP exchange failed: ${error}`);
     }
 
-    const answer = await sdpResponse.text();
+    const data = await sdpResponse.json();
     await this.peerConnection.setRemoteDescription({
       type: 'answer',
-      sdp: answer
+      sdp: data.answerSdp
     });
   }
 
@@ -191,12 +199,10 @@ export class AudioService {
 
   // Send scene control updates to the server
   updateSceneControl(control: Partial<SceneControl>) {
-    if (this.peerConnection?.signalingState === 'stable') {
-      const dataChannel = this.peerConnection.createDataChannel('scene-update');
-      dataChannel.onopen = () => {
-        dataChannel.send(JSON.stringify(control));
-        dataChannel.close();
-      };
+    if (this.sceneControlDataChannel && this.sceneControlDataChannel.readyState === 'open') {
+      this.sceneControlDataChannel.send(JSON.stringify(control));
+    } else {
+      log('warn', 'Scene control data channel not open, cannot send update.');
     }
   }
 }

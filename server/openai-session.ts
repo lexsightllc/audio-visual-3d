@@ -34,3 +34,29 @@ openaiSessionRouter.post('/session', async (req, res) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 });
+
+openaiSessionRouter.post('/sdp-exchange', async (req, res) => {
+  try {
+    const { offerSdp } = req.body as { offerSdp: string };
+    const response = await fetch('https://api.openai.com/v1/realtime/answer', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${process.env.OPENAI_API_KEY!}`,
+        'Content-Type': 'application/sdp',
+      },
+      body: offerSdp,
+    });
+
+    if (!response.ok) {
+      const error = await response.text();
+      console.error('OpenAI SDP error:', error);
+      return res.status(response.status).send(error);
+    }
+
+    const answerSdp = await response.text();
+    res.json({ answerSdp });
+  } catch (error) {
+    console.error('Error in SDP exchange:', error);
+    res.status(500).send('SDP exchange failed');
+  }
+});
