@@ -39,6 +39,8 @@ export class GdmLiveAudioVisuals extends LitElement {
 
   private canvas!: HTMLCanvasElement;
   private canvasCtx!: CanvasRenderingContext2D;
+  private inputGradient!: CanvasGradient;
+  private outputGradient!: CanvasGradient;
 
   static styles = css`
     canvas {
@@ -47,83 +49,64 @@ export class GdmLiveAudioVisuals extends LitElement {
     }
   `;
 
-  connectedCallback() {
-    super.connectedCallback();
-    
-    // Get the canvas element
-    const canvas = this.renderRoot?.querySelector('canvas');
-    if (!canvas) {
-      console.error('Canvas element not found in the shadow root');
-      return;
-    }
+  protected firstUpdated() {
+    const canvas = this.renderRoot.querySelector('canvas');
+    if (!canvas) return;
     this.canvas = canvas;
-    
-    // Get the 2D context
+
     const ctx = this.canvas.getContext('2d');
-    if (!ctx) {
-      console.error('Could not get 2D context from canvas');
-      return;
-    }
+    if (!ctx) return;
     this.canvasCtx = ctx;
-    
-    // Set initial canvas size
+
     this.canvas.width = 400;
     this.canvas.height = 400;
-    
-    // Start visualization
+
+    this.inputGradient = this.canvasCtx.createLinearGradient(0, 0, this.canvas.width, 0);
+    this.inputGradient.addColorStop(0, '#002');
+    this.inputGradient.addColorStop(1, '#26f');
+
+    this.outputGradient = this.canvasCtx.createLinearGradient(0, 0, 0, this.canvas.height);
+    this.outputGradient.addColorStop(0, '#120');
+    this.outputGradient.addColorStop(1, '#2f6');
+
     this.visualize();
   }
 
   private visualize() {
-    if (this.canvas && this.outputAnalyser) {
-      const canvas = this.canvas;
-      const canvasCtx = this.canvasCtx;
+    if (!this.canvas || !this.outputAnalyser) return;
 
-      const WIDTH = canvas.width;
-      const HEIGHT = canvas.height;
+    const canvas = this.canvas;
+    const canvasCtx = this.canvasCtx;
+    const WIDTH = canvas.width;
+    const HEIGHT = canvas.height;
 
-      canvasCtx.clearRect(0, 0, WIDTH, HEIGHT);
-      canvasCtx.fillStyle = '#1f2937';
-      canvasCtx.fillRect(0, 0, WIDTH, HEIGHT);
+    canvasCtx.clearRect(0, 0, WIDTH, HEIGHT);
+    canvasCtx.fillStyle = '#1f2937';
+    canvasCtx.fillRect(0, 0, WIDTH, HEIGHT);
 
-      const barWidth = WIDTH / this.outputAnalyser.data.length;
-      let x = 0;
+    const barWidth = WIDTH / this.outputAnalyser.data.length;
+    let x = 0;
 
-      const inputGradient = canvasCtx.createLinearGradient(0, 0, 0, HEIGHT);
-      inputGradient.addColorStop(1, '#D16BA5');
-      inputGradient.addColorStop(0.5, '#E78686');
-      inputGradient.addColorStop(0, '#FB5F5F');
-      canvasCtx.fillStyle = inputGradient;
-
-      this.inputAnalyser.update();
-
-      for (let i = 0; i < this.inputAnalyser.data.length; i++) {
-        const barHeight = this.inputAnalyser.data[i] * (HEIGHT / 255);
-        canvasCtx.fillRect(x, HEIGHT - barHeight, barWidth, barHeight);
-        x += barWidth;
-      }
-
-      canvasCtx.globalCompositeOperation = 'lighter';
-
-      const outputGradient = canvasCtx.createLinearGradient(0, 0, 0, HEIGHT);
-      outputGradient.addColorStop(1, '#3b82f6');
-      outputGradient.addColorStop(0.5, '#10b981');
-      outputGradient.addColorStop(0, '#ef4444');
-      canvasCtx.fillStyle = outputGradient;
-
-      x = 0;
-      this.outputAnalyser.update();
-
-      for (let i = 0; i < this.outputAnalyser.data.length; i++) {
-        const barHeight = this.outputAnalyser.data[i] * (HEIGHT / 255);
-        canvasCtx.fillRect(x, HEIGHT - barHeight, barWidth, barHeight);
-        x += barWidth;
-      }
+    canvasCtx.fillStyle = this.inputGradient;
+    this.inputAnalyser.update();
+    for (let i = 0; i < this.inputAnalyser.data.length; i++) {
+      const barHeight = this.inputAnalyser.data[i] * (HEIGHT / 255);
+      canvasCtx.fillRect(x, HEIGHT - barHeight, barWidth, barHeight);
+      x += barWidth;
     }
+
+    canvasCtx.globalCompositeOperation = 'lighter';
+    canvasCtx.fillStyle = this.outputGradient;
+    x = 0;
+    this.outputAnalyser.update();
+    for (let i = 0; i < this.outputAnalyser.data.length; i++) {
+      const barHeight = this.outputAnalyser.data[i] * (HEIGHT / 255);
+      canvasCtx.fillRect(x, HEIGHT - barHeight, barWidth, barHeight);
+      x += barWidth;
+    }
+
     requestAnimationFrame(() => this.visualize());
   }
-
-  // Removed firstUpdated since we're now handling canvas setup in connectedCallback
 
   protected render() {
     return html`<canvas></canvas>`;
