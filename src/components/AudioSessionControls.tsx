@@ -1,8 +1,15 @@
 import React from 'react';
-import { useAudioSession } from '../hooks/useAudioSession';
-import { SceneControl } from '../schema/scene-control';
+import { useAudioSession } from '../hooks/useAudioSession.js';
+import type { SceneControl } from '../schema/scene-control.js';
 
-export const AudioSessionControls: React.FC = () => {
+// Import the CSS module
+import styles from './AudioSessionControls.module.css';
+
+interface AudioSessionControlsProps {
+  onSceneControl?: (control: SceneControl) => void;
+}
+
+export const AudioSessionControls: React.FC<AudioSessionControlsProps> = ({ onSceneControl }) => {
   const {
     isInitialized,
     isConnected,
@@ -24,6 +31,22 @@ export const AudioSessionControls: React.FC = () => {
 
   const handleSceneUpdate = (updates: Partial<SceneControl>) => {
     updateSceneControl(updates);
+    
+    // Only call onSceneControl if we have all required properties
+    if (sceneControl && 
+        updates.arousal !== undefined && 
+        updates.valence !== undefined && 
+        updates.twist && 
+        updates.shards && 
+        updates.palette) {
+      onSceneControl?.({
+        arousal: updates.arousal,
+        valence: updates.valence,
+        twist: updates.twist,
+        shards: updates.shards,
+        palette: updates.palette
+      });
+    }
   };
 
   if (!isInitialized) {
@@ -36,17 +59,18 @@ export const AudioSessionControls: React.FC = () => {
   }
 
   return (
-    <div className="audio-session-controls">
-      <div className="status">
+    <div className={styles.audioSessionControls}>
+      <div className={styles.status}>
         Status: {isConnected ? 'Connected' : 'Disconnected'}
         {isLoading && ' (Loading...)'}
       </div>
       
-      {error && <div className="error">Error: {error.message}</div>}
+      {error && <div className={styles.error}>Error: {error.message}</div>}
       
-      <div className="controls">
+      <div className={styles.controls}>
         {!isConnected ? (
           <button 
+            className={styles.button}
             onClick={handleStart} 
             disabled={isLoading}
           >
@@ -54,6 +78,7 @@ export const AudioSessionControls: React.FC = () => {
           </button>
         ) : (
           <button 
+            className={styles.button}
             onClick={handleStop} 
             disabled={isLoading}
           >
@@ -63,130 +88,72 @@ export const AudioSessionControls: React.FC = () => {
       </div>
       
       {sceneControl && (
-        <div className="scene-controls">
+        <div className={styles.sceneControls}>
           <h3>Scene Controls</h3>
           
-          <div className="control-group">
-            <label>Arousal: {sceneControl.arousal.toFixed(2)}</label>
-            <input
-              type="range"
-              min="0"
-              max="1"
-              step="0.01"
-              value={sceneControl.arousal}
-              onChange={(e) => handleSceneUpdate({ arousal: parseFloat(e.target.value) })}
-            />
+          <div className={styles.controlGroup}>
+            <label className={styles.label}>
+              Arousal: {sceneControl.arousal.toFixed(2)}
+              <input
+                type="range"
+                min="0"
+                max="1"
+                step="0.01"
+                value={sceneControl.arousal}
+                onChange={(e) => handleSceneUpdate({ arousal: parseFloat(e.target.value) })}
+                className={styles.rangeInput}
+              />
+            </label>
           </div>
           
-          <div className="control-group">
-            <label>Valence: {sceneControl.valence.toFixed(2)}</label>
-            <input
-              type="range"
-              min="-1"
-              max="1"
-              step="0.01"
-              value={sceneControl.valence}
-              onChange={(e) => handleSceneUpdate({ valence: parseFloat(e.target.value) })}
-            />
+          <div className={styles.controlGroup}>
+            <label className={styles.label}>
+              Valence: {sceneControl.valence.toFixed(2)}
+              <input
+                type="range"
+                min="-1"
+                max="1"
+                step="0.01"
+                value={sceneControl.valence}
+                onChange={(e) => handleSceneUpdate({ valence: parseFloat(e.target.value) })}
+                className={styles.rangeInput}
+              />
+            </label>
           </div>
           
-          <div className="control-group">
-            <label>Twist Magnitude: {sceneControl.twist.magnitude.toFixed(2)}</label>
-            <input
-              type="range"
-              min="0"
-              max="1"
-              step="0.01"
-              value={sceneControl.twist.magnitude}
-              onChange={(e) => handleSceneUpdate({ 
-                twist: { ...sceneControl.twist, magnitude: parseFloat(e.target.value) } 
-              })}
-            />
+          <div className={styles.controlGroup}>
+            <label className={styles.label}>
+              Twist Magnitude: {sceneControl.twist.magnitude.toFixed(2)}
+              <input
+                type="range"
+                min="0"
+                max="1"
+                step="0.01"
+                value={sceneControl.twist.magnitude}
+                onChange={(e) => handleSceneUpdate({ 
+                  twist: { ...sceneControl.twist, magnitude: parseFloat(e.target.value) } 
+                })}
+                className={styles.rangeInput}
+              />
+            </label>
           </div>
           
-          <div className="control-group">
-            <label>Palette:</label>
-            <select
-              value={sceneControl.palette}
-              onChange={(e) => handleSceneUpdate({ palette: e.target.value as any })}
-            >
-              <option value="nocturne">Nocturne</option>
-              <option value="prismatic">Prismatic</option>
-              <option value="infra">Infra</option>
-            </select>
+          <div className={styles.controlGroup}>
+            <label className={styles.label}>
+              Palette:
+              <select
+                value={sceneControl.palette}
+                onChange={(e) => handleSceneUpdate({ palette: e.target.value as any })}
+                className={styles.select}
+              >
+                <option value="nocturne">Nocturne</option>
+                <option value="prismatic">Prismatic</option>
+                <option value="infra">Infra</option>
+              </select>
+            </label>
           </div>
         </div>
       )}
-      
-      <style jsx>{`
-        .audio-session-controls {
-          padding: 1rem;
-          background: rgba(0, 0, 0, 0.7);
-          border-radius: 8px;
-          color: white;
-          max-width: 400px;
-          margin: 1rem 0;
-        }
-        
-        .status {
-          margin-bottom: 1rem;
-          font-weight: bold;
-        }
-        
-        .error {
-          color: #ff6b6b;
-          margin: 1rem 0;
-          padding: 0.5rem;
-          background: rgba(255, 0, 0, 0.1);
-          border-radius: 4px;
-        }
-        
-        button {
-          background: #4a90e2;
-          color: white;
-          border: none;
-          padding: 0.5rem 1rem;
-          border-radius: 4px;
-          cursor: pointer;
-          font-size: 1rem;
-          margin-right: 0.5rem;
-        }
-        
-        button:disabled {
-          background: #666;
-          cursor: not-allowed;
-        }
-        
-        .scene-controls {
-          margin-top: 1.5rem;
-          padding-top: 1rem;
-          border-top: 1px solid #444;
-        }
-        
-        .control-group {
-          margin-bottom: 1rem;
-        }
-        
-        label {
-          display: block;
-          margin-bottom: 0.25rem;
-          font-size: 0.9rem;
-          opacity: 0.9;
-        }
-        
-        input[type="range"] {
-          width: 100%;
-        }
-        
-        select {
-          width: 100%;
-          padding: 0.5rem;
-          border-radius: 4px;
-          background: #333;
-          color: white;
-          border: 1px solid #555;
-        }
-      `}</style>
     </div>
   );
 };

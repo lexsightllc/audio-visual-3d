@@ -30,11 +30,11 @@ class Downsampler {
 }
 
 class MicProcessor extends AudioWorkletProcessor {
-  constructor() {
+  constructor(options) {
     super();
     this.targetRate = 16000;  // Target sample rate (16kHz)
     this.frameSize = 320;     // ~20ms @ 16kHz
-    this.down = new Downsampler(sampleRate, this.targetRate);
+    this.down = new Downsampler(options.processorOptions.sampleRate || 48000, this.targetRate);
     this._stash = new Float32Array(0);
     this.port.onmessage = this.onMessage.bind(this);
   }

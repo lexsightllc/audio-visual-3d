@@ -5,6 +5,12 @@ import type { AudioWorkletMessageEvent } from '../types/audio.js';
 export class AudioService {
   private audioContext: AudioContext | null = null;
   private workletNode: AudioWorkletNode | null = null;
+
+  private handleWorkletMessage = (event: MessageEvent) => {
+    if (event.data && event.data.type === 'audioData') {
+      this.onAudioChunk?.(event.data.audioData);
+    }
+  };
   private mediaStream: MediaStream | null = null;
   private peerConnection: RTCPeerConnection | null = null;
   private sessionId: string | null = null;
@@ -19,40 +25,106 @@ export class AudioService {
 
   async initialize() {
     try {
+      // Create the audio context if it doesn't exist
       if (!this.audioContext) {
-        this.audioContext = new (window.AudioContext || (window as any).webkitAudioContext)({
+        const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
+        if (!AudioContext) {
+          throw new Error('Web Audio API is not supported in this browser');
+        }
+
+        // Create audio context with proper type
+        this.audioContext = new AudioContext({
           sampleRate: 48000, // Higher sample rate for better quality before downsampling
+          latencyHint: 'interactive'
         });
+        
+        // Set up state change handler
+        this.audioContext.onstatechange = () => {
+          const state = this.audioContext?.state;
+          log('info', `AudioContext state changed to: ${state}`);
+          
+          // Notify about state changes
+          if (state === 'suspended') {
+            log('warn', 'AudioContext is suspended. User interaction may be required.');
+          } else if (state === 'running') {
+            log('info', 'AudioContext is now running');
+          }
+        };
+
+        // Add audio worklet module
+        try {
+          await this.audioContext.audioWorklet.addModule('/worklets/mic-processor.js');
+          log('info', 'AudioWorklet processor registered successfully');
+        } catch (err) {
+          console.error('Failed to load audio worklet:', err);
+          throw new Error('Failed to load audio processing module');
+        }
       }
 
-      // Load the worklet module
-      await this.audioContext.audioWorklet.addModule('/worklets/mic-processor.js');
-      
-      // Request microphone access
-      this.mediaStream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      
-      // Create worklet node
-      this.workletNode = new AudioWorkletNode(this.audioContext, 'mic-processor', {
-        numberOfInputs: 1,
-        numberOfOutputs: 1,
-        outputChannelCount: [1],
+      // Request microphone access first
+      this.mediaStream = await navigator.mediaDevices.getUserMedia({ 
+        audio: {
+          echoCancellation: false,
+          noiseSuppression: false,
+          autoGainControl: false,
+          sampleRate: 48000
+        } 
       });
+      
+      // Load the worklet module with proper error handling
+      if (!this.audioContext.audioWorklet) {
+        throw new Error('AudioWorklet is not supported in this browser');
+      }
+
+      try {
+        // Use absolute URL to avoid path resolution issues
+        const workletUrl = new URL('/worklets/mic-processor.js', window.location.origin).href;
+        await this.audioContext.audioWorklet.addModule(workletUrl);
+        log('info', 'Audio worklet module loaded successfully');
+      } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+        const fullError = `Failed to load audio worklet: ${errorMessage}. ` +
+                         `Make sure the worklet file exists at ${window.location.origin}/worklets/mic-processor.js`;
+        log('error', fullError);
+        throw new Error(fullError);
+      }
+      
+      // Ensure we have a valid audio context
+      if (!this.audioContext || !(this.audioContext instanceof (window.AudioContext || (window as any).webkitAudioContext))) {
+        throw new Error('Invalid AudioContext instance');
+      }
+
+      // Create the worklet node with proper type checking
+      // Ensure audio context is running
+      if (this.audioContext.state === 'suspended') {
+        await this.audioContext.resume();
+      }
+
+      // Create audio worklet node
+      if (!this.workletNode && this.audioContext) {
+        try {
+          this.workletNode = new AudioWorkletNode(this.audioContext, 'mic-processor', {
+            numberOfInputs: 1,
+            numberOfOutputs: 1,
+            outputChannelCount: [1],
+            processorOptions: {
+              sampleRate: this.audioContext.sampleRate
+            }
+          });
+          this.workletNode.port.onmessage = this.handleWorkletMessage;
+          this.workletNode.connect(this.audioContext.destination);
+          log('info', 'AudioWorkletNode created and connected');
+        } catch (err) {
+          console.error('Failed to create AudioWorkletNode:', err);
+          throw new Error('Failed to initialize audio processing');
+        }
+      }
 
       // Connect microphone to worklet
       const source = this.audioContext.createMediaStreamSource(this.mediaStream);
-      source.connect(this.workletNode);
-      
-      // Handle audio chunks from worklet
-      this.workletNode.port.onmessage = (event: AudioWorkletMessageEvent) => {
-        if (event.data instanceof Float32Array) {
-          this.onAudioChunk?.(event.data);
-        } else if (this.onSceneControl) {
-          this.onSceneControl(event.data);
-        }
-      };
-
-      // Connect to output (optional, for monitoring)
-      this.workletNode.connect(this.audioContext.destination);
+      if (this.workletNode) {
+        source.connect(this.workletNode);
+      }
       
       return true;
     } catch (error) {

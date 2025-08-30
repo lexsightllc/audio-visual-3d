@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
-import { audioService } from '../services/audio-service';
-import { SceneControl } from '../schema/scene-control';
+import { audioService } from '../services/audio-service.js';
+import type { SceneControl } from '../schema/scene-control.js';
 
 export function useAudioSession() {
   const [isInitialized, setIsInitialized] = useState(false);
@@ -9,45 +9,92 @@ export function useAudioSession() {
   const [error, setError] = useState<Error | null>(null);
   const [sceneControl, setSceneControl] = useState<SceneControl | null>(null);
 
-  // Initialize audio service on mount
-  useEffect(() => {
-    const init = async () => {
-      try {
-        setIsLoading(true);
-        const success = await audioService.initialize();
-        setIsInitialized(success);
-        
-        // Set up event listeners
-        audioService.onSessionUpdate = (state) => {
-          setIsConnected(state === 'connected');
-        };
-        
-        audioService.onError = (err) => {
-          console.error('AudioService error:', err);
-          setError(err);
-          setIsConnected(false);
-        };
-        
-        audioService.onSceneControl = (control) => {
-          setSceneControl(prev => ({
+  // Initialize audio service on first user interaction
+  const initAudio = useCallback(async () => {
+    if (isInitialized) return;
+    
+    try {
+      setIsLoading(true);
+      const success = await audioService.initialize();
+      setIsInitialized(success);
+      
+      // Set up event listeners
+      audioService.onSessionUpdate = (state: 'connecting' | 'connected' | 'disconnected') => {
+        setIsConnected(state === 'connected');
+      };
+      
+      audioService.onError = (err: Error) => {
+        console.error('AudioService error:', err);
+        setError(err);
+        setIsConnected(false);
+      };
+      
+      audioService.onSceneControl = (control: Partial<SceneControl>) => {
+        setSceneControl((prev: SceneControl | null) => {
+          // Create a new object with default values
+          const defaultState: SceneControl = {
+            arousal: 0,
+            valence: 0,
+            twist: {
+              axis: 'y',
+              magnitude: 0,
+              durationMs: 1000
+            },
+            shards: {
+              density: 0,
+              halfLifeMs: 1000
+            },
+            palette: 'nocturne'
+          };
+          
+          // Merge with previous state and new control values
+          return {
+            ...defaultState,
             ...prev,
             ...control,
-            twist: { ...prev?.twist, ...control.twist },
-            shards: { ...prev?.shards, ...control.shards },
-          }));
-        };
-        
-      } catch (err) {
-        console.error('Failed to initialize audio service:', err);
-        setError(err instanceof Error ? err : new Error(String(err)));
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    init();
+            twist: {
+              ...defaultState.twist,
+              ...prev?.twist,
+              ...(control.twist || {})
+            },
+            shards: {
+              ...defaultState.shards,
+              ...prev?.shards,
+              ...(control.shards || {})
+            }
+          };
+        });
+      };
+      
+    } catch (err) {
+      console.error('Failed to initialize audio service:', err);
+      setError(err instanceof Error ? err : new Error(String(err)));
+    } finally {
+      setIsLoading(false);
+    }
+  }, [isInitialized]);
+  
+  // Set up a one-time click handler for the document to initialize audio
+  useEffect(() => {
+    if (isInitialized) return;
     
-    // Cleanup on unmount
+    const handleFirstInteraction = () => {
+      initAudio();
+      document.removeEventListener('click', handleFirstInteraction);
+      document.removeEventListener('keydown', handleFirstInteraction);
+    };
+    
+    document.addEventListener('click', handleFirstInteraction, { once: true });
+    document.addEventListener('keydown', handleFirstInteraction, { once: true });
+    
+    return () => {
+      document.removeEventListener('click', handleFirstInteraction);
+      document.removeEventListener('keydown', handleFirstInteraction);
+    };
+  }, [isInitialized, initAudio]);
+  
+  // Cleanup on unmount
+  useEffect(() => {
     return () => {
       audioService.stopSession().catch(console.error);
     };
