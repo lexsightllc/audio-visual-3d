@@ -2,24 +2,26 @@
 
 <div align="center">
   <img width="800" alt="Audio Visual 3D Demo" src="https://via.placeholder.com/1200x600?text=Audio+Visual+3D+Demonstration" />
-  
+
   [![TypeScript](https://img.shields.io/badge/TypeScript-4.5.5-blue.svg)](https://www.typescriptlang.org/)
   [![Vite](https://img.shields.io/badge/Vite-3.0+-blueviolet.svg)](https://vitejs.dev/)
   [![Three.js](https://img.shields.io/badge/Three.js-r140-000000.svg)](https://threejs.org/)
 </div>
 
+Audio Visual 3D demonstrates real-time, voice‑driven 3D visuals built with modern web technologies. The scene reacts to microphone input and leverages AI services to respond to your conversation.
+
 ## Features
 
-- Real-time 3D audio visualization
-- Built with Three.js for stunning 3D graphics
-- Powered by Vite for fast development and building
-- TypeScript support for better developer experience
+- Real-time 3D rendering with adaptive audio visualisations
+- Voice chat interface that uses AI services to react to spoken input
+- Built with Three.js and TypeScript for maintainable, high‑quality graphics
+- Vite-powered development for fast builds and hot reloading
 - Responsive design that works on desktop and mobile
 
 ## Prerequisites
 
-- Node.js 16+ (LTS recommended)
-- npm 8+ or yarn 1.22+
+- Node.js 20.12 or later (but < 21)
+- npm 9+
 - A modern web browser (Chrome, Firefox, Safari, Edge)
 
 ## Quick Start
@@ -33,8 +35,6 @@
 2. **Install dependencies**
    ```bash
    npm install
-   # or
-   yarn
    ```
 
 3. **Set up environment variables**
@@ -46,19 +46,15 @@
 4. **Start the development server**
    ```bash
    npm run dev
-   # or
-   yarn dev
    ```
 
 5. **Open your browser**
-   Visit `http://localhost:3000` to see the app in action!
+   Visit `http://localhost:5173` to see the app in action.
 
 ## Build for Production
 
 ```bash
 npm run build
-# or
-yarn build
 ```
 
 ## Technologies Used
@@ -70,11 +66,20 @@ yarn build
 
 ## Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+Contributions via issues or pull requests are welcome.
+
+## Documentation
+
+- [LICENSE](LICENSE) – Apache License 2.0 terms
+- [NOTICE](NOTICE) – attribution notices
+- [PRIVACY](PRIVACY.md)
+- [SECURITY](SECURITY.md)
+- [ETHICS](ETHICS.md)
+- [THIRD_PARTY_NOTICES](THIRD_PARTY_NOTICES.txt)
 
 ## License
 
-This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the Apache License 2.0. See the [LICENSE](LICENSE) and [NOTICE](NOTICE) files for details.
 
 ## Acknowledgments
 
