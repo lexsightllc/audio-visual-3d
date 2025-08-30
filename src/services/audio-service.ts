@@ -5,6 +5,7 @@ import type { AudioWorkletMessageEvent } from '../types/audio.js';
 export class AudioService {
   private audioContext: AudioContext | null = null;
   private workletNode: AudioWorkletNode | null = null;
+  private workletModuleLoaded = false;
 
   private handleWorkletMessage = (event: MessageEvent) => {
     if (event.data && event.data.type === 'audioData') {
@@ -51,14 +52,6 @@ export class AudioService {
           }
         };
 
-        // Add audio worklet module
-        try {
-          await this.audioContext.audioWorklet.addModule('/worklets/mic-processor.js');
-          log('info', 'AudioWorklet processor registered successfully');
-        } catch (err) {
-          console.error('Failed to load audio worklet:', err);
-          throw new Error('Failed to load audio processing module');
-        }
       }
 
       // Request microphone access first
@@ -71,22 +64,25 @@ export class AudioService {
         } 
       });
       
-      // Load the worklet module with proper error handling
+      // Load the worklet module with proper error handling (only once)
       if (!this.audioContext.audioWorklet) {
         throw new Error('AudioWorklet is not supported in this browser');
       }
 
-      try {
-        // Use absolute URL to avoid path resolution issues
-        const workletUrl = new URL('/worklets/mic-processor.js', window.location.origin).href;
-        await this.audioContext.audioWorklet.addModule(workletUrl);
-        log('info', 'Audio worklet module loaded successfully');
-      } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-        const fullError = `Failed to load audio worklet: ${errorMessage}. ` +
-                         `Make sure the worklet file exists at ${window.location.origin}/worklets/mic-processor.js`;
-        log('error', fullError);
-        throw new Error(fullError);
+      if (!this.workletModuleLoaded) {
+        try {
+          // Use absolute URL to avoid path resolution issues
+          const workletUrl = new URL('/worklets/mic-processor.js', window.location.origin).href;
+          await this.audioContext.audioWorklet.addModule(workletUrl);
+          log('info', 'Audio worklet module loaded successfully');
+          this.workletModuleLoaded = true;
+        } catch (error) {
+          const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+          const fullError = `Failed to load audio worklet: ${errorMessage}. ` +
+                           `Make sure the worklet file exists at ${window.location.origin}/worklets/mic-processor.js`;
+          log('error', fullError);
+          throw new Error(fullError);
+        }
       }
       
       // Ensure we have a valid audio context

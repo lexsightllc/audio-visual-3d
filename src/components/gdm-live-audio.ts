@@ -153,9 +153,15 @@ export class GdmLiveAudio extends LitElement {
         return;
       }
 
-      // Gemini implementation would go here
-      this.aiStatus = 'Gemini não implementado';
-      this.isRecording = false;
+      // Implement Gemini AI integration here, similar to OpenAI's WebRTC setup.
+      this.aiStatus = 'Conectando ao Gemini…';
+      // ... actual Gemini connection logic ...
+      // If successful:
+      // this.status = 'Gravando';
+      // this.aiStatus = 'Ouvindo…';
+      // else:
+      // this.aiStatus = 'Error connecting to Gemini';
+      this.isRecording = false; // Or true if recording starts
       
     } catch (err) {
       console.error('Error starting recording:', err);
