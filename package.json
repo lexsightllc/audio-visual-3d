@@ -17,13 +17,11 @@
     "evidence": "node scripts/evidence.mjs"
   },
   "dependencies": {
-    "@google/genai": "^1.16.0",
     "@react-three/drei": "^10.7.4",
     "@react-three/fiber": "^9.3.0",
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
-    "node-fetch": "^3.3.2",
     "openai": "^4.28.0",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
@@ -38,7 +36,6 @@
     "@types/dotenv": "^6.1.1",
     "@types/express": "^4.17.23",
     "@types/node": "^20.19.11",
-    "@types/node-fetch": "^2.6.13",
     "@types/react": "^19.1.12",
     "@types/react-dom": "^19.1.9",
     "@types/three": "^0.179.0",
