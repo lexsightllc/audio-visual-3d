@@ -46,11 +46,20 @@ class MicProcessor extends AudioWorkletProcessor {
     }
   }
 
-  _concat(a, b) {
-    const out = new Float32Array(a.length + b.length);
-    out.set(a, 0);
-    out.set(b, a.length);
-    return out;
+  // Append `source` to `target`, growing the underlying buffer less often
+  _append(target, source) {
+    const newLength = target.length + source.length;
+    let out;
+    if (target.buffer.byteLength >= newLength * Float32Array.BYTES_PER_ELEMENT) {
+      // Reuse existing buffer if there is enough space
+      out = new Float32Array(target.buffer, 0, newLength);
+    } else {
+      // Allocate a slightly larger buffer to reduce future allocations
+      out = new Float32Array(Math.ceil(newLength * 1.5));
+    }
+    out.set(target, 0);
+    out.set(source, target.length);
+    return out.subarray(0, newLength);
   }
 
   process(inputs) {
@@ -64,7 +73,7 @@ class MicProcessor extends AudioWorkletProcessor {
     const downsampled = this.down.run(mono);
 
     // Accumulate into 20ms payloads and post
-    this._stash = this._concat(this._stash, downsampled);
+    this._stash = this._append(this._stash, downsampled);
     
     while (this._stash.length >= this.frameSize) {
       const chunk = this._stash.subarray(0, this.frameSize);
