@@ -6,11 +6,15 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
-    "preview": "vite preview",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview --strictPort --port 5173",
     "start": "node server/index.js",
     "server": "tsc --project server/tsconfig.json && node server/index.js",
-    "generate-notices": "node scripts/generate-notices.js"
+    "generate-notices": "node scripts/generate-notices.js",
+    "test": "vitest run",
+    "validate:schemas": "node scripts/validate-schemas.mjs",
+    "demo": "make demo",
+    "evidence": "node scripts/evidence.mjs"
   },
   "dependencies": {
     "@google/genai": "^1.16.0",
@@ -23,8 +27,7 @@
     "openai": "^4.28.0",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
-    "three-stdlib": "^2.36.0",
-    "zod": "^3.25.76"
+    "three-stdlib": "^2.36.0"
   },
   "devDependencies": {
     "@google/generative-ai": "^0.24.1",
@@ -48,6 +51,14 @@
     "three": "^0.179.1",
     "typescript": "~5.3.2",
     "vite": "^5.0.8",
-    "vite-tsconfig-paths": "^5.1.4"
+    "vite-tsconfig-paths": "^5.1.4",
+    "ajv": "^8.17.1",
+    "@cyclonedx/cyclonedx-npm": "^4.0.0",
+    "playwright": "^1.48.2",
+    "seedrandom": "^3.0.5",
+    "vitest": "^2.0.5",
+    "zod": "^3.23.8"
   }
+  ,
+  "engines": { "node": ">=20.12 <21" }
 }
