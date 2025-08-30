@@ -12,7 +12,9 @@ export class Analyser {
 
   constructor(node: AudioNode) {
     this.analyser = node.context.createAnalyser();
-    this.analyser.fftSize = 32;
+    // Increase fftSize for more detailed frequency analysis
+    // Larger sizes provide more frequency bins but add latency.
+    this.analyser.fftSize = 256;
     this.bufferLength = this.analyser.frequencyBinCount;
     this.dataArray = new Uint8Array(this.bufferLength);
     node.connect(this.analyser);

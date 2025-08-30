@@ -18,6 +18,7 @@ const fs = `precision highp float;
 out vec4 fragmentColor;
 
 uniform vec2 resolution;
+// 'rand' is expected to be updated from the JavaScript side each frame
 uniform float rand;
 
 void main() {

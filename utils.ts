@@ -72,13 +72,15 @@ async function decodeAudioData(
     dataFloat32[i] = dataInt16[i] / 32768.0;
   }
   // Extract interleaved channels
-  if (numChannels === 0) {
+  if (numChannels < 1) {
+    console.warn('Invalid number of channels provided to decodeAudioData, defaulting to 1.');
+    numChannels = 1;
+  }
+  if (numChannels === 1) {
     buffer.copyToChannel(dataFloat32, 0);
   } else {
     for (let i = 0; i < numChannels; i++) {
-      const channel = dataFloat32.filter(
-        (_, index) => index % numChannels === i,
-      );
+      const channel = dataFloat32.filter((_, index) => index % numChannels === i);
       buffer.copyToChannel(channel, i);
     }
   }

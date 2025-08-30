@@ -57,36 +57,12 @@ void main() {
   float displacementMagnitude = length(displacement);
   float intensity = 1.0 + displacementMagnitude * 4.0;
   vColor.rgb = (baseColor + displacementColor) * intensity;
-
-
   // Denormalize back to the original [-1,1]^3 space.
   transformed = (deformed_u * 2.0) - 1.0;
 
-  // Recalculate normals for deformed geometry using finite differences on the manifold.
-  float inc = 0.01;
-  vec3 dummy_displacement; // We don't need the displacement for these samples
-  vec3 u_dx = T(u + vec3(inc, 0.0, 0.0), dummy_displacement);
-  vec3 u_dy = T(u + vec3(0.0, inc, 0.0), dummy_displacement);
-  vec3 u_dz = T(u + vec3(0.0, 0.0, inc), dummy_displacement);
-
-  // Convert tangents from manifold space back to model space.
-  vec3 p_dx = (u_dx * 2.0) - 1.0;
-  vec3 p_dy = (u_dy * 2.0) - 1.0;
-  vec3 p_dz = (u_dz * 2.0) - 1.0;
-
-  // Compute normals by taking the cross product of the tangents.
-  vec3 normal_x = cross(p_dy - transformed, p_dz - transformed);
-  vec3 normal_y = cross(p_dz - transformed, p_dx - transformed);
-  vec3 normal_z = cross(p_dx - transformed, p_dy - transformed);
-
-  // Blend the normals based on the original vertex normal to handle cube faces correctly.
-  transformedNormal = normalMatrix * normalize(
-    abs(objectNormal.x) * normal_x +
-    abs(objectNormal.y) * normal_y +
-    abs(objectNormal.z) * normal_z
-  );
-
-  vNormal = normalize( transformedNormal );
+  // For sphere-like geometry, analytical normals are sufficient
+  transformedNormal = normalMatrix * normalize(objectNormal);
+  vNormal = normalize(transformedNormal);
 
   #include <morphtarget_vertex>
   #include <skinning_vertex>
@@ -102,5 +78,20 @@ void main() {
     vWorldPosition = worldPosition.xyz;
   #endif
 }`
-// FIX: Export the vertex shader string so it can be imported as a module.
-export {vs};
+
+const fs = `
+precision highp float;
+
+varying vec3 vViewPosition;
+varying vec3 vNormal;
+varying vec3 vColor;
+
+void main() {
+  vec3 normal = normalize(vNormal);
+  vec3 lightDirection = normalize(vec3(0.5, 0.5, 1.0));
+  float diffuse = max(dot(normal, lightDirection), 0.0);
+  gl_FragColor = vec4(vColor * (0.5 + 0.5 * diffuse), 1.0);
+}
+`;
+
+export {fs, vs};
