@@ -1,4 +1,5 @@
-import { SceneControl } from '../schema/scene-control';
+import { SceneControl } from '../schema/scene-control.js';
+import type { AudioWorkletMessageEvent } from '../types/audio.js';
 
 export class AudioService {
   private audioContext: AudioContext | null = null;
@@ -16,9 +17,11 @@ export class AudioService {
 
   async initialize() {
     try {
-      this.audioContext = new (window.AudioContext || (window as any).webkitAudioContext)({
-        sampleRate: 48000, // Higher sample rate for better quality before downsampling
-      });
+      if (!this.audioContext) {
+        this.audioContext = new (window.AudioContext || (window as any).webkitAudioContext)({
+          sampleRate: 48000, // Higher sample rate for better quality before downsampling
+        });
+      }
 
       // Load the worklet module
       await this.audioContext.audioWorklet.addModule('/worklets/mic-processor.js');
@@ -38,9 +41,11 @@ export class AudioService {
       source.connect(this.workletNode);
       
       // Handle audio chunks from worklet
-      this.workletNode.port.onmessage = (event) => {
-        if (event.data instanceof Float32Array && this.onAudioChunk) {
-          this.onAudioChunk(event.data);
+      this.workletNode.port.onmessage = (event: AudioWorkletMessageEvent) => {
+        if (event.data instanceof Float32Array) {
+          this.onAudioChunk?.(event.data);
+        } else if (this.onSceneControl) {
+          this.onSceneControl(event.data);
         }
       };
 

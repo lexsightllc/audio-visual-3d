@@ -39,6 +39,8 @@
     "@types/react": "^19.1.12",
     "@types/react-dom": "^19.1.9",
     "@types/three": "^0.179.0",
+    "@types/web": "^0.0.265",
+    "@types/webrtc": "^0.0.46",
     "@vitejs/plugin-react": "^5.0.2",
     "@vitejs/plugin-vue": "^6.0.1",
     "license-checker": "^25.0.1",
