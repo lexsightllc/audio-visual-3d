@@ -1,4 +1,5 @@
-import { SceneControl } from '../schema/scene-control.js';
+import { SceneControl, validateSceneControl } from '../schema/scene-control.js';
+import { log } from '../lib/logger.js';
 import type { AudioWorkletMessageEvent } from '../types/audio.js';
 
 export class AudioService {
@@ -120,11 +121,14 @@ export class AudioService {
     dataChannel.onmessage = (event) => {
       try {
         const data = JSON.parse(event.data);
-        if (this.onSceneControl) {
-          this.onSceneControl(data);
+        const result = validateSceneControl(data);
+        if (result.ok) {
+          this.onSceneControl?.(result.data);
+        } else {
+          log('error', 'Invalid scene control payload', { errors: result.errors });
         }
       } catch (error) {
-        console.error('Error parsing scene control data:', error);
+        log('error', 'Error parsing scene control data', { error: String(error) });
       }
     };
 

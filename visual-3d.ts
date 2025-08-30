@@ -26,6 +26,9 @@ import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPa
 import { FXAAShader } from 'three/examples/jsm/shaders/FXAAShader.js';
 import {fs as backdropFS, vs as backdropVS} from './backdrop-shader';
 import {vs as sphereVS} from './sphere-shader';
+import { initSeed } from './src/lib/seed.js';
+
+const { rand } = initSeed(new URLSearchParams(window.location.search).get('seed') || undefined);
 
 const GRID_SIZE = 4;
 
@@ -323,13 +326,13 @@ export class GdmLiveAudioVisuals3D extends LitElement {
    */
   private createNewIntent(time: number) {
     const programs = ['twist', 'ripple', 'breathe', 'shear'] as const;
-    const program = programs[Math.floor(Math.random() * programs.length)];
+    const program = programs[Math.floor(rand() * programs.length)];
     this.currentIntent = {
       program,
       startTime: time,
-      duration: 3000 + Math.random() * 5000,
+      duration: 3000 + rand() * 5000,
       startValence: this.conductorState.valence,
-      targetValence: Math.random() * 2 - 1,
+      targetValence: rand() * 2 - 1,
     };
 
     this.dispatchEvent(

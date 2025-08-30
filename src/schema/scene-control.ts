@@ -1,88 +1,33 @@
-import { z } from 'zod';
+import { z } from "zod";
+import Ajv from "ajv/dist/2020.js";
+import schema from "../../schema/scene-control.schema.json";
 
-// Helper functions for validation and transformation
-const clamp = (min: number, max: number) => (n: number) =>
-  Math.min(max, Math.max(min, n));
-
-const clamp01 = clamp(0, 1);
-const clampValence = clamp(-1, 1);
-const clampMs = clamp(1, 120_000);
-
-// Schema definition
-export const sceneControlSchema = z.object({
-  // Core emotional dimensions (0-1 for arousal, -1 to 1 for valence)
-  arousal: z.coerce.number().transform(clamp01).default(0.4),
-  valence: z.coerce.number().transform(clampValence).default(0),
-
-  // Visual effect: twisting animation
+export const ZSceneControl = z.object({
+  arousal: z.number().min(0).max(1),
+  valence: z.number().min(-1).max(1),
   twist: z.object({
-    axis: z.enum(["primaryDiagonal", "secondaryDiagonal", "y"]).default("y"),
-    magnitude: z.coerce.number().transform(clamp01).default(0.2),
-    durationMs: z.coerce.number().transform(clampMs).default(1500)
-  }).strict(),
-
-  // Particle effects
+    axis: z.enum(["primaryDiagonal","secondaryDiagonal","y"]),
+    magnitude: z.number().min(0).max(1),
+    durationMs: z.number().int().min(250).max(60000)
+  }),
   shards: z.object({
-    density: z.coerce.number().transform(clamp01).default(0.1),
-    halfLifeMs: z.coerce.number().transform(clampMs).default(3000)
-  }).strict(),
+    density: z.number().min(0).max(1),
+    halfLifeMs: z.number().int().min(200).max(20000)
+  }),
+  palette: z.enum(["nocturne","prismatic","infra"])
+});
+export type SceneControl = z.infer<typeof ZSceneControl>;
 
-  // Color scheme
-  palette: z.enum(["nocturne", "prismatic", "infra"]).default("nocturne")
-}).strict();
+const ajv = new Ajv({ allErrors: true, strict: true });
+const validate = ajv.compile(schema as any);
 
-// TypeScript type
-export type SceneControl = z.infer<typeof sceneControlSchema>;
-
-// Default values
-export const defaultSceneControl: SceneControl = {
-  arousal: 0.4,
-  valence: 0,
-  twist: {
-    axis: "y",
-    magnitude: 0.2,
-    durationMs: 1500
-  },
-  shards: {
-    density: 0.1,
-    halfLifeMs: 3000
-  },
-  palette: "nocturne"
-};
-
-/**
- * Safely parse and validate scene control data
- * @param input Unknown input to parse
- * @returns Validated SceneControl object with defaults for missing fields
- */
-export function parseSceneControl(input: unknown): SceneControl {
-  const result = sceneControlSchema.safeParse(input);
-  return result.success ? result.data : { ...defaultSceneControl };
-}
-
-/**
- * Type guard for SceneControl
- * @param input Value to check
- * @returns Whether the input is a valid SceneControl
- */
-export function isSceneControl(input: unknown): input is SceneControl {
-  return sceneControlSchema.safeParse(input).success;
-}
-
-/**
- * Merge partial scene control updates with defaults
- * @param current Current scene control state
- * @param updates Partial updates to apply
- * @returns Merged scene control state
- */
-export function mergeSceneControl(
-  current: SceneControl,
-  updates: Partial<SceneControl>
-): SceneControl {
-  return {
-    ...current,
-    ...updates,
-    twist: { ...current.twist, ...updates.twist },
-    shards: { ...current.shards, ...updates.shards }
-  };
+export function validateSceneControl(payload: unknown): { ok: true; data: SceneControl } | { ok: false; errors: string[] } {
+  if (!validate(payload)) {
+    return { ok: false, errors: (validate.errors ?? []).map(e => `${e.instancePath} ${e.message}`) };
+  }
+  const parsed = ZSceneControl.safeParse(payload);
+  if (!parsed.success) {
+    return { ok: false, errors: parsed.error.issues.map(i => `${i.path.join(".")}: ${i.message}`) };
+  }
+  return { ok: true, data: parsed.data };
 }
