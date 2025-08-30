@@ -23,7 +23,17 @@ export default class OpenAIService {
   async startSession(): Promise<void> {
     if (this.isActive) return;
     this.isActive = true;
-    // TODO: Implement WebRTC connection to OpenAI
+
+    try {
+      // TODO: Implement WebRTC connection to OpenAI, including SDP exchange
+      // and ICE candidate handling. This should fetch session details from the
+      // backend and set up an RTCPeerConnection with a control data channel.
+      this.peerConnection = new RTCPeerConnection();
+      this.dataChannel = this.peerConnection.createDataChannel('oai-control');
+    } catch (error) {
+      this.isActive = false;
+      throw error;
+    }
   }
 
   async startAudioCapture(): Promise<void> {
@@ -41,7 +51,14 @@ export default class OpenAIService {
         } 
       });
       
-      // TODO: Process and send audio to WebRTC
+      // TODO: Process audio from this.mediaStream and send it to the WebRTC
+      // peer connection. This might involve using an AudioWorkletNode to
+      // capture and format audio chunks.
+      if (this.peerConnection && this.mediaStream) {
+        for (const track of this.mediaStream.getAudioTracks()) {
+          this.peerConnection.addTrack(track, this.mediaStream);
+        }
+      }
       
     } catch (error) {
       console.error('Error starting audio capture:', error);

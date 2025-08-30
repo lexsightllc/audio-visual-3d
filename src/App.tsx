@@ -64,21 +64,16 @@ type ThreeMaterial = any;
 // Cast THREE to any to avoid TypeScript errors
 const THREE_ANY = THREE as any;
 
-// Make THREE available globally for debugging
-if (typeof window !== 'undefined') {
-  window.THREE = THREE_ANY;
-}
-
 // Extend the Window interface to include the THREE namespace
 declare global {
   interface Window {
-    THREE: typeof THREE_ANY;
+    THREE?: typeof THREE_ANY;
     __sceneStable?: boolean;
   }
 }
 
-// Make THREE available globally for debugging
-if (typeof window !== 'undefined') {
+// Expose THREE globally only during development for debugging
+if (import.meta.env.DEV && typeof window !== 'undefined') {
   window.THREE = THREE_ANY;
 }
 
@@ -244,10 +239,8 @@ const App = () => {
         });
     }
     
-    const newLocal = new THREE.Mesh(geometry, material);
-    const newLocal = newLocal;
     // Create mesh
-    const mesh = newLocal;
+    const mesh = new THREE.Mesh(geometry, material);
     const scale = 1 + control.arousal;
     mesh.scale.set(scale, scale, scale);
     

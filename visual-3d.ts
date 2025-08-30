@@ -3,10 +3,6 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-// tslint:disable:organize-imports
-// tslint:disable:ban-malformed-import-paths
-// tslint:disable:no-new-decorators
-
 import {LitElement, css, html} from 'lit';
 import {customElement, property} from 'lit/decorators.js';
 import {Analyser} from './analyser';
@@ -207,15 +203,14 @@ export class GdmLiveAudioVisuals3D extends LitElement {
     this.controlGrid = controlGrid;
     this.controlPointsTexture = controlPointsTexture;
 
+    const pmremGenerator = new THREE.PMREMGenerator(this.renderer);
     new EXRLoader().load('piz_compressed.exr', (texture: THREE.Texture) => {
       texture.mapping = THREE.EquirectangularReflectionMapping as THREE.Mapping;
-      const exrCubeRenderTarget = (this.renderer as any).pmremGenerator.fromEquirectangular(texture);
+      const exrCubeRenderTarget = pmremGenerator.fromEquirectangular(texture);
       const sphereMaterial = this.sphere.material as THREE.MeshStandardMaterial;
       sphereMaterial.envMap = exrCubeRenderTarget.texture;
       this.sphere.visible = true;
     });
-
-    const pmremGenerator = (this.renderer as any).pmremGenerator;
     pmremGenerator.compileEquirectangularShader();
 
     // Declare sphereMaterial before using it in the EXRLoader callback
@@ -283,12 +278,7 @@ export class GdmLiveAudioVisuals3D extends LitElement {
       const h = window.innerHeight;
       
       // Update backdrop material uniforms with proper type assertion
-      const material = this.backdrop.material as THREE.ShaderMaterial & {
-        uniforms: {
-          resolution: { value: THREE.Vector2 };
-          [key: string]: { value: any };
-        };
-      };
+      const material = this.backdrop.material as THREE.ShaderMaterial;
       
       if (material.uniforms?.resolution) {
         material.uniforms.resolution.value.set(w * dPR, h * dPR);
