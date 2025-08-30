@@ -18,13 +18,17 @@ const fs = `precision highp float;
 out vec4 fragmentColor;
 
 uniform vec2 resolution;
-// 'rand' is expected to be updated from the JavaScript side each frame
-uniform float rand;
+uniform float u_time;
+uniform float u_jitter;
+
+float hash(vec2 p) {
+  return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453 + u_jitter);
+}
 
 void main() {
-  float aspectRatio = resolution.x / resolution.y; 
+  float aspectRatio = resolution.x / resolution.y;
   vec2 vUv = gl_FragCoord.xy / resolution;
-  float noise = (fract(sin(dot(vUv, vec2(12.9898 + rand,78.233)*2.0)) * 43758.5453));
+  float noise = hash(vUv * (12.9898 + u_time * 0.0003));
 
   vUv -= .5;
   vUv.x *= aspectRatio;
@@ -35,7 +39,7 @@ void main() {
   vec3 to = vec3(16., 12., 20.) / 255.;
 
   fragmentColor = vec4(mix(from, to, d) + .005 * noise, 1.);
-}
-`;
+}`;
 
 export {fs, vs};
+
