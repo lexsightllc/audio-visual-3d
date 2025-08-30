@@ -1,0 +1,6 @@
+{
+  "seed": "00000000",
+  "ewma": 3.2268999999999997,
+  "cusum": 15,
+  "crossValidation": true
+}
