@@ -10,10 +10,6 @@ Repository: https://github.com/babel/babel
 License: Apache-2.0
 Repository: https://github.com/dimforge/rapier.js
 
---- @google/genai@1.16.0 ---
-License: Apache-2.0
-Repository: https://github.com/googleapis/js-genai
-
 --- @mediapipe/tasks-vision@0.10.17 ---
 License: Apache-2.0
 Repository: Not specified
@@ -98,10 +94,6 @@ Repository: https://github.com/mysticatea/abort-controller
 License: MIT
 Repository: https://github.com/jshttp/accepts
 
---- agent-base@7.1.4 ---
-License: MIT
-Repository: https://github.com/TooTallNate/proxy-agents
-
 --- agentkeepalive@4.6.0 ---
 License: MIT
 Repository: https://github.com/node-modules/agentkeepalive
@@ -115,8 +107,8 @@ License: MIT
 Repository: https://github.com/alexindigo/asynckit
 
 --- audio-visual-3d@0.1.0 ---
-License: Apache-2.0
-Repository: https://github.com/lexsight/audio-visual-3d
+License: UNLICENSED
+Repository: Not specified
 
 --- base64-js@1.5.1 ---
 License: MIT
@@ -126,17 +118,9 @@ Repository: https://github.com/beatgammit/base64-js
 License: MIT
 Repository: https://github.com/lojjic/bidi-js
 
---- bignumber.js@9.3.1 ---
-License: MIT
-Repository: https://github.com/MikeMcl/bignumber.js
-
 --- body-parser@1.20.3 ---
 License: MIT
 Repository: https://github.com/expressjs/body-parser
-
---- buffer-equal-constant-time@1.0.1 ---
-License: BSD-3-Clause
-Repository: https://github.com/goinstant/buffer-equal-constant-time
 
 --- buffer@6.0.3 ---
 License: MIT
@@ -202,10 +186,6 @@ Repository: https://github.com/TooTallNate/node-data-uri-to-buffer
 License: MIT
 Repository: https://github.com/visionmedia/debug
 
---- debug@4.4.1 ---
-License: MIT
-Repository: https://github.com/debug-js/debug
-
 --- delayed-stream@1.0.0 ---
 License: MIT
 Repository: https://github.com/felixge/node-delayed-stream
@@ -234,10 +214,6 @@ Repository: https://github.com/google/draco
 License: MIT
 Repository: https://github.com/es-shims/dunder-proto
 
---- ecdsa-sig-formatter@1.0.11 ---
-License: Apache-2.0
-Repository: https://github.com/Brightspace/node-ecdsa-sig-formatter
-
 --- ee-first@1.1.1 ---
 License: MIT
 Repository: https://github.com/jonathanong/ee-first
@@ -249,6 +225,10 @@ Repository: https://github.com/pillarjs/encodeurl
 --- encodeurl@2.0.0 ---
 License: MIT
 Repository: https://github.com/pillarjs/encodeurl
+
+--- encoding@0.1.13 ---
+License: MIT
+Repository: https://github.com/andris9/encoding
 
 --- es-define-property@1.0.1 ---
 License: MIT
@@ -281,10 +261,6 @@ Repository: https://github.com/mysticatea/event-target-shim
 --- express@4.21.2 ---
 License: MIT
 Repository: https://github.com/expressjs/express
-
---- extend@3.0.2 ---
-License: MIT
-Repository: https://github.com/justmoon/node-extend
 
 --- fetch-blob@3.2.0 ---
 License: MIT
@@ -330,14 +306,6 @@ Repository: https://github.com/jshttp/fresh
 License: MIT
 Repository: https://github.com/Raynos/function-bind
 
---- gaxios@6.7.1 ---
-License: Apache-2.0
-Repository: https://github.com/googleapis/gaxios
-
---- gcp-metadata@6.1.1 ---
-License: Apache-2.0
-Repository: https://github.com/googleapis/gcp-metadata
-
 --- get-intrinsic@1.3.0 ---
 License: MIT
 Repository: https://github.com/ljharb/get-intrinsic
@@ -350,21 +318,9 @@ Repository: https://github.com/ljharb/get-proto
 License: MIT
 Repository: https://github.com/hughsk/glsl-noise
 
---- google-auth-library@9.15.1 ---
-License: Apache-2.0
-Repository: https://github.com/googleapis/google-auth-library-nodejs
-
---- google-logging-utils@0.0.2 ---
-License: Apache-2.0
-Repository: https://github.com/googleapis/gax-nodejs
-
 --- gopd@1.2.0 ---
 License: MIT
 Repository: https://github.com/ljharb/gopd
-
---- gtoken@7.1.0 ---
-License: MIT
-Repository: https://github.com/google/node-gtoken
 
 --- has-symbols@1.1.0 ---
 License: MIT
@@ -386,15 +342,15 @@ Repository: https://github.com/video-dev/hls.js
 License: MIT
 Repository: https://github.com/jshttp/http-errors
 
---- https-proxy-agent@7.0.6 ---
-License: MIT
-Repository: https://github.com/TooTallNate/proxy-agents
-
 --- humanize-ms@1.2.1 ---
 License: MIT
 Repository: https://github.com/node-modules/humanize-ms
 
 --- iconv-lite@0.4.24 ---
+License: MIT
+Repository: https://github.com/ashtuchkin/iconv-lite
+
+--- iconv-lite@0.6.3 ---
 License: MIT
 Repository: https://github.com/ashtuchkin/iconv-lite
 
@@ -418,10 +374,6 @@ Repository: https://github.com/whitequark/ipaddr.js
 License: MIT
 Repository: https://github.com/then/is-promise
 
---- is-stream@2.0.1 ---
-License: MIT
-Repository: https://github.com/sindresorhus/is-stream
-
 --- isexe@2.0.0 ---
 License: ISC
 Repository: https://github.com/isaacs/isexe
@@ -429,18 +381,6 @@ Repository: https://github.com/isaacs/isexe
 --- its-fine@2.0.0 ---
 License: MIT
 Repository: https://github.com/pmndrs/its-fine
-
---- json-bigint@1.0.0 ---
-License: MIT
-Repository: https://github.com/sidorares/json-bigint
-
---- jwa@2.0.1 ---
-License: MIT
-Repository: https://github.com/brianloveswords/node-jwa
-
---- jws@4.0.0 ---
-License: MIT
-Repository: https://github.com/brianloveswords/node-jws
 
 --- lie@3.3.0 ---
 License: MIT
@@ -717,10 +657,6 @@ Repository: https://github.com/piotrwitek/utility-types
 --- utils-merge@1.0.1 ---
 License: MIT
 Repository: https://github.com/jaredhanson/utils-merge
-
---- uuid@9.0.1 ---
-License: MIT
-Repository: https://github.com/uuidjs/uuid
 
 --- vary@1.1.2 ---
 License: MIT
