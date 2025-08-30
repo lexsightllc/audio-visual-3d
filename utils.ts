@@ -22,10 +22,11 @@ class AudioBlobImpl extends Blob {
   }
 }
 
-export const toBase64 = (bytes: Uint8Array): string =>
-  typeof Buffer !== 'undefined'
-    ? Buffer.from(bytes).toString('base64')
-    : btoa(String.fromCharCode(...bytes));
+export const toBase64 = (bytes: Uint8Array): string => {
+  if (typeof Buffer !== 'undefined') return Buffer.from(bytes).toString('base64');
+  // Browser: avoid huge String.fromCharCode(...)
+  return btoa(String.fromCharCode.apply(null, Array.from(bytes)));
+};
 
 function decode(base64: string): Uint8Array {
   const binaryString = atob(base64);
@@ -51,12 +52,10 @@ function createBlob(data: Float32Array): AudioBlob {
 
 export function splitInterleavedFloat32(data: Float32Array, numChannels: number): Float32Array[] {
   const frames = Math.floor(data.length / numChannels);
-  const out = Array.from({ length: numChannels }, () => new Float32Array(frames));
-  for (let i = 0; i < frames; i++) {
-    const base = i * numChannels;
-    for (let c = 0; c < numChannels; c++) out[c][i] = data[base + c];
-  }
-  return out;
+  const outs = Array.from({ length: numChannels }, () => new Float32Array(frames));
+  for (let i = 0, f = 0; f < frames; f++, i += numChannels)
+    for (let c = 0; c < numChannels; c++) outs[c][f] = data[i + c];
+  return outs;
 }
 
 async function decodeAudioData(
@@ -85,10 +84,9 @@ async function decodeAudioData(
   if (numChannels === 1) {
     buffer.copyToChannel(dataFloat32, 0);
   } else {
-    for (let i = 0; i < numChannels; i++) {
-      const channel = dataFloat32.filter((_, index) => index % numChannels === i);
-      buffer.copyToChannel(channel, i);
-    }
+    // use indexed copy instead of filter-based split
+    const channels = splitInterleavedFloat32(dataFloat32, numChannels);
+    for (let i = 0; i < numChannels; i++) buffer.copyToChannel(channels[i], i);
   }
 
   return buffer;
