@@ -1,53 +1,20 @@
-/* tslint:disable */
-/**
- * @license
- * SPDX-License-Identifier: Apache-2.0
- */
+import React from 'react';
+import { createRoot } from 'react-dom/client';
+import App from './src/App';
+import './index.css';
 
-import { GoogleGenAI, Modality } from '@google/genai';
-import type { LiveServerMessage, Session } from '@google/genai';
-import { LitElement, css, html } from 'lit';
-import { customElement, state } from 'lit/decorators.js';
-import { createBlob, decode, decodeAudioData as decodePCM } from './utils';
-import OpenAIService from './src/services/openai-service';
-
-declare global {
-  interface Window { 
-    webkitAudioContext: typeof AudioContext;
-  }
+// Create a root container for our React app
+const container = document.getElementById('root');
+if (container) {
+  const root = createRoot(container);
+  root.render(
+    <React.StrictMode>
+      <App />
+    </React.StrictMode>
+  );
+} else {
+  console.error('Failed to find root element');
 }
-
-@customElement('gdm-live-audio')
-export class GdmLiveAudio extends LitElement {
-  @state() accessor isRecording = false;
-  @state() accessor status = '';
-  @state() accessor error = '';
-  @state() accessor aiStatus = '';
-  @state() accessor useOpenAI = false;
-
-  private client: GoogleGenAI | null = null;
-  private session: Session | null = null;
-  private openAIService: OpenAIService | null = null;
-
-  private inputAudioContext: AudioContext;
-  private outputAudioContext: AudioContext;
-  private inputNode: GainNode;
-  private outputNode: GainNode;
-  private scriptProcessorNode: ScriptProcessorNode | null = null;
-  private mediaStream: MediaStream | null = null;
-
-  private nextStartTime = 0;
-  private sources = new Set<AudioBufferSourceNode>();
-
-  static styles = css`
-    #status {
-      position: absolute;
-      bottom: 100px;
-      left: 0;
-      right: 0;
-      z-index: 10;
-      text-align: center;
-      color: rgba(255, 255, 255, 0.9);
       font-family: Arial, sans-serif;
       display: flex;
       flex-direction: column;

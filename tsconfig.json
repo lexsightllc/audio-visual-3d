@@ -1,32 +1,38 @@
 {
   "compilerOptions": {
-    "target": "ES2020",
+    "target": "ESNext",
+    "useDefineForClassFields": true,
+    "lib": ["ESNext", "DOM", "DOM.Iterable"],
     "module": "ESNext",
-    "lib": ["ES2020", "DOM", "DOM.Iterable", "WebWorker"],
-    "moduleResolution": "node",
-    "strict": true,
-    "esModuleInterop": true,
     "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true,
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
     "resolveJsonModule": true,
+    "isolatedModules": true,
     "noEmit": true,
-    "jsx": "preserve",
+    "jsx": "react-jsx",
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "forceConsistentCasingInFileNames": true,
     "baseUrl": ".",
-    "types": ["vite/client", "three", "node"],
+    "paths": {
+      "@/*": ["./src/*"],
+      "three": ["./node_modules/three/build/three.module.js"],
+      "three/examples/jsm/*": ["./node_modules/three/examples/jsm/*.js"]
+    },
     "typeRoots": [
       "./node_modules/@types",
       "./src/types"
-    ],
-    "paths": {
-      "@/*": ["./src/*"]
-    },
-    "allowSyntheticDefaultImports": true,
-    "isolatedModules": true
+    ]
   },
   "include": [
-    "**/*.ts",
-    "**/*.tsx",
-    "**/*.d.ts"
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "src/**/*.d.ts"
   ],
   "exclude": [
     "node_modules",
