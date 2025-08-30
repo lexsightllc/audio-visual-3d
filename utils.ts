@@ -22,14 +22,10 @@ class AudioBlobImpl extends Blob {
   }
 }
 
-function encode(bytes: Uint8Array): string {
-  let binary = '';
-  const len = bytes.byteLength;
-  for (let i = 0; i < len; i++) {
-    binary += String.fromCharCode(bytes[i]);
-  }
-  return btoa(binary);
-}
+export const toBase64 = (bytes: Uint8Array): string =>
+  typeof Buffer !== 'undefined'
+    ? Buffer.from(bytes).toString('base64')
+    : btoa(String.fromCharCode(...bytes));
 
 function decode(base64: string): Uint8Array {
   const binaryString = atob(base64);
@@ -49,8 +45,18 @@ function createBlob(data: Float32Array): AudioBlob {
     int16[i] = Math.max(-32768, Math.min(32767, Math.floor(data[i] * 32768)));
   }
 
-  const encoded = encode(new Uint8Array(int16.buffer));
+  const encoded = toBase64(new Uint8Array(int16.buffer));
   return AudioBlobImpl.fromBase64(encoded, 'audio/pcm;rate=16000');
+}
+
+export function splitInterleavedFloat32(data: Float32Array, numChannels: number): Float32Array[] {
+  const frames = Math.floor(data.length / numChannels);
+  const out = Array.from({ length: numChannels }, () => new Float32Array(frames));
+  for (let i = 0; i < frames; i++) {
+    const base = i * numChannels;
+    for (let c = 0; c < numChannels; c++) out[c][i] = data[base + c];
+  }
+  return out;
 }
 
 async function decodeAudioData(
@@ -88,4 +94,4 @@ async function decodeAudioData(
   return buffer;
 }
 
-export {createBlob, decode, decodeAudioData, encode};
+export {createBlob, decode, decodeAudioData, toBase64, splitInterleavedFloat32};

@@ -78,6 +78,7 @@ export class GdmLiveAudioVisuals3D extends LitElement {
   private inputAnalyser!: Analyser;
   private outputAnalyser!: Analyser;
   private prevTime = 0;
+  private startTime = 0;
   private lancetas!: THREE.InstancedMesh;
 
   // The conductor state is the smoothly interpolated, per-frame state used for rendering.
@@ -107,7 +108,6 @@ export class GdmLiveAudioVisuals3D extends LitElement {
   set outputNode(node: AudioNode) {
     this._outputNode = node;
     this.outputAnalyser = new Analyser(this._outputNode);
-    this.renderer.outputColorSpace = THREE.SRGBColorSpace;
   }
 
   get outputNode() {
@@ -151,7 +151,8 @@ export class GdmLiveAudioVisuals3D extends LitElement {
     );
     const material = new THREE.ShaderMaterial({
       uniforms: {
-        time: { value: 0 },
+        u_time: { value: 0 },
+        u_jitter: { value: 0 },
         resolution: { value: new THREE.Vector2() },
       },
       vertexShader: backdropVS,
@@ -175,7 +176,8 @@ export class GdmLiveAudioVisuals3D extends LitElement {
     this.renderer = new THREE.WebGLRenderer({
       canvas: this.canvas,
       antialias: false,
-      powerPreference: 'high-performance'
+      powerPreference: 'high-performance',
+      alpha: false,
     });
     this.renderer.setSize(window.innerWidth, window.innerHeight);
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
@@ -317,7 +319,8 @@ export class GdmLiveAudioVisuals3D extends LitElement {
 
     window.addEventListener('resize', onWindowResize.bind(this));
     onWindowResize();
-
+    this.startTime = performance.now();
+    this.prevTime = this.startTime;
     this.animation();
   }
 
@@ -405,21 +408,27 @@ export class GdmLiveAudioVisuals3D extends LitElement {
   }
 
   private animation = () => {
-    const time = performance.now();
-    const deltaTime = time - this.prevTime;
-    this.prevTime = time;
+    const now = performance.now();
+    const t = now - this.startTime;
+    const deltaTime = now - this.prevTime;
+    this.prevTime = now;
+    this.conductorState.time = t;
+
+    const material = this.backdrop.material as THREE.ShaderMaterial;
+    material.uniforms.u_time.value = t;
+    material.uniforms.u_jitter.value = (Math.random() - 0.5) * 1e-3;
 
     if (this.inputAnalyser) {
       const volume = this.getAverageVolume(this.inputAnalyser);
       this.plannerState.targetArousal = Math.min(volume / 100, 1);
     }
 
-    if (!this.currentIntent || time > this.currentIntent.startTime + this.currentIntent.duration) {
-      this.createNewIntent(time);
+    if (!this.currentIntent || now > this.currentIntent.startTime + this.currentIntent.duration) {
+      this.createNewIntent(now);
     }
 
     const intent = this.currentIntent;
-    const progress = Math.min(1, (time - intent.startTime) / intent.duration);
+    const progress = Math.min(1, (now - intent.startTime) / intent.duration);
     this.conductorState.valence =
       intent.startValence + (intent.targetValence - intent.startValence) * progress;
 
@@ -449,7 +458,7 @@ export class GdmLiveAudioVisuals3D extends LitElement {
     this.canvas = canvas;
     this.init();
     // Kick off the first intent.
-    this.createNewIntent(performance.now());
+    this.createNewIntent(this.startTime);
   }
 
   protected render() {
