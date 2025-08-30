@@ -115,8 +115,8 @@ License: MIT
 Repository: https://github.com/alexindigo/asynckit
 
 --- audio-visual-3d@0.1.0 ---
-License: UNLICENSED
-Repository: Not specified
+License: Apache-2.0
+Repository: https://github.com/lexsight/audio-visual-3d
 
 --- base64-js@1.5.1 ---
 License: MIT
