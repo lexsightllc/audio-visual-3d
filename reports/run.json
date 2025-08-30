@@ -1,0 +1,18 @@
+{
+  "startedAt": "2025-08-30T10:25:56.408Z",
+  "seed": "00000000",
+  "url": null,
+  "commit": "bd03dfa740f6994516837eae33626cb5e62444f6",
+  "dirty": true,
+  "synthetic": true,
+  "artifacts": [
+    {
+      "file": "artifacts/first-frame.txt",
+      "sha256": "bb31ac0280d3ae120bcf01306780ca9108e9cbe496f29260d6b3730ad2c7b5c1"
+    },
+    {
+      "file": "logs/synthetic.jsonl",
+      "sha256": "7c475777b78a8b2743bb4de74a246b3821dcee1e92a4477d03bfbe69deaa02b4"
+    }
+  ]
+}

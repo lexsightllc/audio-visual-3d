@@ -22,6 +22,7 @@ type ThreeMaterial = THREE.Material;
 declare global {
   interface Window {
     THREE: typeof THREE;
+    __sceneStable?: boolean;
   }
 }
 
@@ -94,19 +95,26 @@ const App: React.FC = () => {
     window.addEventListener('resize', handleResize);
     
     // Animation loop
+    let firstFrame = true;
     const animate = () => {
       requestAnimationFrame(animate);
-      
+
       // Update objects
       objectsRef.current.forEach((obj: ThreeObject3D) => {
         obj.rotation.x += 0.01;
         obj.rotation.y += 0.01;
       });
-      
+
       // Render
       composer.render();
+
+      // Mark first frame stable for E2E tests
+      if (firstFrame) {
+        firstFrame = false;
+        window.__sceneStable = true;
+      }
     };
-    
+
     animate();
     
     // Cleanup

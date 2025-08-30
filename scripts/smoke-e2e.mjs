@@ -4,6 +4,7 @@ import { createHash } from "node:crypto";
 import { mkdirSync, writeFileSync, existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { execSync } from "node:child_process";
+import playwrightPkg from "playwright/package.json" assert { type: "json" };
 
 const ART = "artifacts";
 const LOG = "logs";
@@ -45,18 +46,22 @@ const fingerprint = await page.evaluate(() => {
 });
 log({ ts: new Date().toISOString(), type: "context", seed, ...fingerprint });
 
-// screenshot artifact
-const shot = join(ART, `first-frame.png`);
-await page.screenshot({ path: shot, fullPage: false });
+// capture first frame directly from canvas for determinism
+const shot = join(ART, `first-frame.txt`);
+const dataUrl = await page.evaluate(() => {
+  const canvas = document.querySelector('canvas');
+  return canvas ? canvas.toDataURL('image/png') : null;
+});
+if (!dataUrl) throw new Error('Canvas not found for screenshot');
+writeFileSync(shot, dataUrl + '\n');
 
 // checksums for proof of replicability
 function sha256(buf) { return createHash("sha256").update(buf).digest("hex"); }
-const pngBuf = readFileSync(shot);
 const checksums = [
-  { file: "artifacts/first-frame.png", sha256: sha256(pngBuf) },
+  { file: "artifacts/first-frame.txt", sha256: sha256(Buffer.from(dataUrl)) },
   { file: logPath, sha256: sha256(readFileSync(logPath)) }
 ];
-writeFileSync(join(ART, "checksums.json"), JSON.stringify(checksums, null, 2));
+writeFileSync(join(ART, "checksums.json"), JSON.stringify(checksums, null, 2) + '\n');
 
 await browser.close();
 
@@ -70,6 +75,7 @@ writeFileSync("reports/run.json", JSON.stringify({
   url: target,
   commit,
   dirty,
+  playwrightVersion: playwrightPkg.version,
   fingerprint,
   artifacts: checksums
-}, null, 2));
+}, null, 2) + '\n');
