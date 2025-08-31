@@ -31,21 +31,10 @@ export const AudioSessionControls: React.FC<AudioSessionControlsProps> = ({ onSc
 
   const handleSceneUpdate = (updates: Partial<SceneControl>) => {
     updateSceneControl(updates);
-    
-    // Only call onSceneControl if we have all required properties
-    if (sceneControl && 
-        updates.arousal !== undefined && 
-        updates.valence !== undefined && 
-        updates.twist && 
-        updates.shards && 
-        updates.palette) {
-      onSceneControl?.({
-        arousal: updates.arousal,
-        valence: updates.valence,
-        twist: updates.twist,
-        shards: updates.shards,
-        palette: updates.palette
-      });
+
+    // Propagate the latest complete scene control state
+    if (sceneControl) {
+      onSceneControl?.(sceneControl);
     }
   };
 

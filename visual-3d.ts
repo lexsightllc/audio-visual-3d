@@ -9,9 +9,8 @@ import {Analyser} from './analyser';
 
 // Three.js Core
 import * as THREE from 'three';
+import { Mesh, IcosahedronGeometry, ConeGeometry, MeshBasicMaterial, AdditiveBlending } from 'three';
 import { createRenderer } from './renderer';
-
-// Import specific types from three
 
 // Three.js Extensions
 import { EXRLoader } from 'three/examples/jsm/loaders/EXRLoader.js';
@@ -68,8 +67,8 @@ export class GdmLiveAudioVisuals3D extends LitElement {
   private camera!: THREE.PerspectiveCamera;
   private controls!: OrbitControls;
   private composer!: EffectComposer;
-  private backdrop!: THREE.Mesh;
-  private sphere!: THREE.Mesh;
+  private backdrop!: Mesh;
+  private sphere!: Mesh;
   private controlGrid!: Float32Array;
   private controlPointsTexture!: THREE.Data3DTexture;
   private inputAnalyser!: Analyser;
@@ -142,8 +141,8 @@ export class GdmLiveAudioVisuals3D extends LitElement {
     const scene = new THREE.Scene();
     scene.background = new THREE.Color(0x100c14);
 
-    const backdrop = new THREE.Mesh(
-      new THREE.IcosahedronGeometry(10, 5),
+    const backdrop = new Mesh(
+      new IcosahedronGeometry(10, 5),
     );
     const material = new THREE.ShaderMaterial({
       uniforms: {
@@ -233,17 +232,17 @@ export class GdmLiveAudioVisuals3D extends LitElement {
       shader.vertexShader = sphereVS;
     };
 
-    const sphere = new THREE.Mesh(geometry, sphereMaterial);
+    const sphere = new Mesh(geometry, sphereMaterial);
     scene.add(sphere);
     sphere.visible = false;
 
     this.sphere = sphere;
 
     const lancetaCount = GRID_SIZE * GRID_SIZE * GRID_SIZE;
-    const lancetaGeometry = new THREE.ConeGeometry(0.02, 0.2, 4);
-    const lancetaMaterial = new THREE.MeshBasicMaterial({
+    const lancetaGeometry = new ConeGeometry(0.02, 0.2, 4);
+    const lancetaMaterial = new MeshBasicMaterial({
       color: 0xffaaff,
-      blending: THREE.AdditiveBlending as THREE.Blending,
+      blending: AdditiveBlending,
     });
     this.lancetas = new THREE.InstancedMesh(
       lancetaGeometry,

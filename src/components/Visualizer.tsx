@@ -87,7 +87,7 @@ const Visualizer: React.FC<VisualizerProps> = ({ audioData, color }) => {
 
       mesh.instanceMatrix.needsUpdate = true;
       mesh.rotation.y += 0.002;
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      // Removed redundant pixel ratio update; it's set during initialization and resize
       renderer.render(scene, camera);
     };
     animate();
@@ -97,6 +97,7 @@ const Visualizer: React.FC<VisualizerProps> = ({ audioData, color }) => {
         camera.aspect = currentMount.clientWidth / currentMount.clientHeight;
         camera.updateProjectionMatrix();
         renderer.setSize(currentMount.clientWidth, currentMount.clientHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
       }
     };
     window.addEventListener('resize', handleResize);
