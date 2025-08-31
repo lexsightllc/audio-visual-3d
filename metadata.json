@@ -1,8 +1,7 @@
 {
-  "name": "Copy of Live Audio",
-  "description": "Experience real-time voice chat with 3D visuals react to your conversation, bringing AI interaction to life.",
+  "name": "3D Audio Visualizer",
+  "description": "A reactive 3D audio visualizer that uses your microphone's input to generate dynamic visual patterns in a WebGL scene.",
   "requestFramePermissions": [
     "microphone"
-  ],
-  "prompt": ""
+  ]
 }
