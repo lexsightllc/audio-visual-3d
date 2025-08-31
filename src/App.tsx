@@ -1,11 +1,33 @@
-import React, { Suspense, useState } from 'react';
+import React, { Suspense, useState, useEffect } from 'react';
 import { useAudioAnalyzer } from './hooks/useAudioAnalyzer.js';
 import Visualizer from './components/Visualizer.jsx';
 import { AlertIcon, MicrophoneIcon } from './components/Icons.js';
 
+const qualitySettings = {
+  low: { fftSize: 512, smoothing: 0.6 },
+  medium: { fftSize: 1024, smoothing: 0.75 },
+  high: { fftSize: 2048, smoothing: 0.85 }
+} as const;
+
 const App: React.FC = () => {
-  const { audioData, start, error, isMicEnabled, isInitializing } = useAudioAnalyzer();
-  const [color, setColor] = useState<string>('#00ffff');
+  const [color, setColor] = useState<string>(() => localStorage.getItem('barColor') ?? '#00ffff');
+  const [quality, setQuality] = useState<keyof typeof qualitySettings>(
+    () => (localStorage.getItem('quality') as keyof typeof qualitySettings) || 'medium'
+  );
+
+  const { fftSize, smoothing } = qualitySettings[quality];
+  const { audioData, start, error, isMicEnabled, isInitializing } = useAudioAnalyzer(
+    fftSize,
+    smoothing
+  );
+
+  useEffect(() => {
+    localStorage.setItem('barColor', color);
+  }, [color]);
+
+  useEffect(() => {
+    localStorage.setItem('quality', quality);
+  }, [quality]);
 
   return (
     <main className="relative w-screen h-screen bg-white text-black flex flex-col items-center justify-center font-sans overflow-hidden">
@@ -26,6 +48,20 @@ const App: React.FC = () => {
               className="w-8 h-8 bg-transparent border-2 border-gray-400 rounded-md cursor-pointer"
               aria-label="Change visualizer bar color"
             />
+            <label htmlFor="quality" className="text-gray-800 text-sm font-mono select-none">
+              Quality
+            </label>
+            <select
+              id="quality"
+              value={quality}
+              onChange={(e) => setQuality(e.target.value as keyof typeof qualitySettings)}
+              className="bg-transparent border-2 border-gray-400 rounded-md p-1 text-sm"
+              aria-label="Set analysis quality"
+            >
+              <option value="low">Low</option>
+              <option value="medium">Medium</option>
+              <option value="high">High</option>
+            </select>
           </div>
           <div
             className="absolute bottom-4 left-1/2 -translate-x-1/2 text-gray-500 text-xs md:text-sm text-center pointer-events-none font-mono"
@@ -61,6 +97,7 @@ const App: React.FC = () => {
           <button
             onClick={start}
             disabled={isInitializing}
+            aria-label="Start microphone"
             className="group relative inline-flex items-center justify-center px-8 py-4 text-lg font-bold text-black transition-all duration-200 bg-gray-50 rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-white focus:ring-cyan-500 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <span className="absolute -inset-full top-0 left-0 -z-10 block transform-gpu transition-all duration-500 group-hover:-inset-3/4 group-hover:bg-gradient-to-r group-hover:from-purple-600 group-hover:to-cyan-600"></span>
@@ -71,6 +108,9 @@ const App: React.FC = () => {
       )}
 
       <div className="absolute top-0 left-0 w-full h-full bg-grid-pattern opacity-10 pointer-events-none"></div>
+      <div className="sr-only" aria-live="polite">
+        {isMicEnabled ? 'Microphone active' : 'Microphone inactive'}
+      </div>
     </main>
   );
 };

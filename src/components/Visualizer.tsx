@@ -1,6 +1,6 @@
 import React, { useRef, useEffect } from 'react';
 import * as THREE from 'three';
-import type { Mesh, MeshStandardMaterial } from 'three';
+import type { MeshStandardMaterial } from 'three';
 
 interface VisualizerProps {
   audioData: Uint8Array;
@@ -39,26 +39,21 @@ const Visualizer: React.FC<VisualizerProps> = ({ audioData, color }) => {
     const renderer = new (THREE as any).WebGLRenderer({ antialias: true });
     renderer.setClearColor(0x000000, 0);
     renderer.setSize(currentMount.clientWidth, currentMount.clientHeight);
-    renderer.setPixelRatio(window.devicePixelRatio);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     currentMount.appendChild(renderer.domElement);
 
-    const group = new (THREE as any).Group();
     const bars = 128;
     const radius = 50;
-
-    for (let i = 0; i < bars; i++) {
-      const geometry = new (THREE as any).BoxGeometry(2, 1, 2);
-      const material = new THREE.MeshPhongMaterial({ color: 0xffffff });
-      const bar = new (THREE as any).Mesh(geometry, material);
-
-      const angle = (i / bars) * Math.PI * 2;
-      bar.position.x = radius * Math.cos(angle);
-      bar.position.z = radius * Math.sin(angle);
-      (bar as any).lookAt(new (THREE as any).Vector3(0, 0, 0));
-
-      group.add(bar);
-    }
-    scene.add(group);
+    const geometry = new (THREE as any).BoxGeometry(2, 0.5, 2);
+    const material = new THREE.MeshStandardMaterial({
+      color: new (THREE as any).Color(colorRef.current),
+      metalness: 0.2,
+      roughness: 0.6
+    });
+    const mesh = new (THREE as any).InstancedMesh(geometry, material, bars);
+    mesh.instanceMatrix.setUsage((THREE as any).DynamicDrawUsage);
+    scene.add(mesh);
+    const dummy = new (THREE as any).Object3D();
 
     const ambientLight = new THREE.AmbientLight(0x404040, 2);
     scene.add(ambientLight);
@@ -68,29 +63,31 @@ const Visualizer: React.FC<VisualizerProps> = ({ audioData, color }) => {
     scene.add(pointLight);
 
     let animationFrameId: number;
-    const baseColor = new (THREE as any).Color(colorRef.current);
-    const baseHsl = { h: 0.5, s: 0.5, l: 0.5 };
 
     const animate = () => {
       animationFrameId = requestAnimationFrame(animate);
 
-      const currentAudioData = audioDataRef.current;
-      baseColor.set(colorRef.current);
-      // Use baseHsl with default values
+      const spectrum = audioDataRef.current;
+      const mat = mesh.material as MeshStandardMaterial;
+      (mat.color as any).set(colorRef.current);
 
-      group.children.forEach((child: any, index: number) => {
-        const bar = child as THREE.Mesh;
-        const scale = (currentAudioData[index] / 255) || 0;
-        bar.scale.y = Math.max(0.1, scale * 40);
+      for (let i = 0; i < bars; i++) {
+        const t = (i / bars) * Math.PI * 2;
+        const x = Math.cos(t) * radius;
+        const z = Math.sin(t) * radius;
+        const bin = spectrum[Math.min(i, spectrum.length - 1)] / 255;
+        const h = Math.pow(bin, 0.8) * 1.8 + 0.05;
 
-        const material = bar.material as THREE.MeshStandardMaterial;
-        const lightness = Math.max(0.2, Math.min(1.0, 0.2 + scale * 0.8));
-        (material.color as any).setHSL(baseHsl.h, baseHsl.s, lightness);
-      });
+        dummy.position.set(x, 0, z);
+        dummy.scale.set(1, h, 1);
+        dummy.lookAt(0, 0, 0);
+        dummy.updateMatrix();
+        mesh.setMatrixAt(i, dummy.matrix);
+      }
 
-      group.rotation.y += 0.002;
-      (camera as any).lookAt(0, 0, 0);
-
+      mesh.instanceMatrix.needsUpdate = true;
+      mesh.rotation.y += 0.002;
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
       renderer.render(scene, camera);
     };
     animate();
@@ -108,11 +105,13 @@ const Visualizer: React.FC<VisualizerProps> = ({ audioData, color }) => {
       window.removeEventListener('resize', handleResize);
       cancelAnimationFrame(animationFrameId);
 
+      geometry.dispose();
+      material.dispose();
       scene.traverse((object: any) => {
-        if (object instanceof THREE.Mesh) {
+        if (object instanceof THREE.Mesh && object !== mesh) {
           object.geometry.dispose();
           if (Array.isArray(object.material)) {
-            object.material.forEach(material => material.dispose());
+            object.material.forEach((m) => m.dispose());
           } else {
             object.material.dispose();
           }

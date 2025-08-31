@@ -1,8 +1,9 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 
-const FFT_SIZE = 512;
-
-export const useAudioAnalyzer = () => {
+export const useAudioAnalyzer = (
+  fftSize: number,
+  smoothing: number
+) => {
   const [isInitializing, setIsInitializing] = useState(false);
   const [isMicEnabled, setIsMicEnabled] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -28,10 +29,19 @@ export const useAudioAnalyzer = () => {
     setError(null);
     try {
       if (!audioContextRef.current) {
-        audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
+        audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)({
+          latencyHint: 'interactive'
+        });
       }
 
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
+      const stream = await navigator.mediaDevices.getUserMedia({
+        audio: {
+          echoCancellation: false,
+          noiseSuppression: false,
+          autoGainControl: false
+        },
+        video: false
+      });
       streamRef.current = stream;
 
       if (audioContextRef.current.state === 'suspended') {
@@ -40,7 +50,8 @@ export const useAudioAnalyzer = () => {
 
       sourceRef.current = audioContextRef.current.createMediaStreamSource(stream);
       analyserRef.current = audioContextRef.current.createAnalyser();
-      analyserRef.current.fftSize = FFT_SIZE;
+      analyserRef.current.fftSize = fftSize;
+      analyserRef.current.smoothingTimeConstant = smoothing;
 
       sourceRef.current.connect(analyserRef.current);
 
@@ -60,7 +71,7 @@ export const useAudioAnalyzer = () => {
     } finally {
       setIsInitializing(false);
     }
-  }, [analyze]);
+  }, [analyze, fftSize, smoothing]);
 
   const stop = useCallback(() => {
     if (streamRef.current) {
@@ -76,7 +87,26 @@ export const useAudioAnalyzer = () => {
   }, []);
 
   useEffect(() => {
+    if (analyserRef.current) {
+      analyserRef.current.fftSize = fftSize;
+      analyserRef.current.smoothingTimeConstant = smoothing;
+    }
+  }, [fftSize, smoothing]);
+
+  useEffect(() => {
+    const handleVisibility = () => {
+      if (
+        document.visibilityState === 'visible' &&
+        audioContextRef.current?.state !== 'running'
+      ) {
+        audioContextRef.current?.resume();
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibility);
+
     return () => {
+      document.removeEventListener('visibilitychange', handleVisibility);
       stop();
       if (audioContextRef.current && audioContextRef.current.state !== 'closed') {
         audioContextRef.current.close();
