@@ -10,19 +10,19 @@ const App = () => {
   const [control, setControl] = useState<SceneControl | null>(null);
 
   return (
-    <div className={styles.app}>
-      <div className={styles.sceneContainer}>
+    <main className={styles.app}>
+      <section className={styles.stage}>
         <Canvas camera={{ position: [0, 0, 5], fov: 60 }}>
           <Suspense fallback={null}>
             <AudioVisualizer control={control} />
           </Suspense>
         </Canvas>
-      </div>
+      </section>
 
-      <div className={styles.controlsOverlay}>
+      <section className={styles.controls}>
         <AudioSessionControls onSceneControl={setControl} />
-      </div>
-    </div>
+      </section>
+    </main>
   );
 };
 

@@ -4,7 +4,7 @@
   height: 100vh;
 }
 
-.sceneContainer {
+.stage {
   position: absolute;
   top: 0;
   left: 0;
@@ -12,7 +12,7 @@
   height: 100%;
 }
 
-.controlsOverlay {
+.controls {
   position: absolute;
   top: 20px;
   right: 20px;
