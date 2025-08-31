@@ -1,7 +1,9 @@
 # Audio Visual 3D
 
 <div align="center">
-  <img width="800" alt="Audio Visual 3D Demo" src="https://via.placeholder.com/1200x600?text=Audio+Visual+3D+Demonstration" />
+  <a href="https://audio-visual-3d-app.netlify.app/" target="_blank">
+    <img width="800" alt="Audio Visual 3D Demo" src="https://via.placeholder.com/1200x600?text=Audio+Visual+3D+Demonstration" />
+  </a>
 
   [![TypeScript](https://img.shields.io/badge/TypeScript-4.5.5-blue.svg)](https://www.typescriptlang.org/)
   [![Vite](https://img.shields.io/badge/Vite-3.0+-blueviolet.svg)](https://vitejs.dev/)
@@ -9,6 +11,8 @@
 </div>
 
 Audio Visual 3D demonstrates real-time, voice‑driven 3D visuals built with modern web technologies. The scene reacts to microphone input and leverages AI services to respond to your conversation.
+
+**Live demo:** https://audio-visual-3d-app.netlify.app/
 
 ## Features
 
