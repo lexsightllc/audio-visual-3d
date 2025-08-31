@@ -1,9 +1,9 @@
 // services/openai-service.ts
 
 export default class OpenAIService {
-  private onControlUpdate: (data: unknown) => void;
-  private outCtx: AudioContext;
-  private outNode: AudioNode;
+  private onControlUpdate: ((data: unknown) => void) | null = null;
+  private outCtx: AudioContext | null = null;
+  private outNode: AudioNode | null = null;
   private mediaStream: MediaStream | null = null;
   private peerConnection: RTCPeerConnection | null = null;
   private dataChannel: RTCDataChannel | null = null;
@@ -11,13 +11,26 @@ export default class OpenAIService {
   private sessionId: string | null = null;
 
   constructor(
-    onControlUpdate: (data: unknown) => void,
-    outputAudioContext: AudioContext,
-    outputNode: AudioNode
+    onControlUpdate?: (data: unknown) => void,
+    outputAudioContext?: AudioContext,
+    outputNode?: AudioNode
   ) {
-    this.onControlUpdate = onControlUpdate;
-    this.outCtx = outputAudioContext;
-    this.outNode = outputNode;
+    if (onControlUpdate) this.onControlUpdate = onControlUpdate;
+    if (outputAudioContext) this.outCtx = outputAudioContext;
+    if (outputNode) this.outNode = outputNode;
+  }
+
+  async transcribeAudio(audioBlob: Blob): Promise<string> {
+    try {
+      // In a real implementation, you would send the audio blob to your backend
+      // which would then call the OpenAI Whisper API
+      // For now, we'll return a placeholder response
+      console.log('Transcribing audio...', audioBlob);
+      return "This is a placeholder transcription. In a real app, this would be the transcribed text from the audio.";
+    } catch (error) {
+      console.error('Error transcribing audio:', error);
+      throw new Error('Failed to transcribe audio');
+    }
   }
 
   async startSession(): Promise<void> {

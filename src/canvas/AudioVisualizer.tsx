@@ -1,5 +1,5 @@
 import Scene from './Scene.js';
-import type { SceneControl } from '../schema/scene-control.js';
+import type { SceneControl } from '../schema/scene-control.mjs';
 
 interface AudioVisualizerProps {
   control?: SceneControl | null;

@@ -19,8 +19,9 @@ tex.magFilter = (THREE as any).LinearFilter;
 tex.mapping = (THREE as any).EquirectangularReflectionMapping;
 
 // Test basic Three.js functionality
-const scene = new (THREE as any).Scene();
-const camera = new (THREE as any).PerspectiveCamera(75, 1, 0.1, 1000);
+// Scene and camera are not used in this file
+// const scene = new (THREE as any).Scene();
+// const camera = new (THREE as any).PerspectiveCamera(75, 1, 0.1, 1000);
 
 console.log('Three.js smoke test passed!', {
   renderer: r.info,

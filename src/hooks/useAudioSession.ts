@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { audioService } from '../services/audio-service.js';
-import type { SceneControl } from '../schema/scene-control.js';
+import type { SceneControl } from '../schema/scene-control.mjs';
 
 export function useAudioSession() {
   const [isInitialized, setIsInitialized] = useState(false);

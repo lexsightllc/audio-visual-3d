@@ -1,6 +1,6 @@
 import React from 'react';
 import { useAudioSession } from '../hooks/useAudioSession.js';
-import type { SceneControl } from '../schema/scene-control.js';
+import type { SceneControl } from '../schema/scene-control.mjs';
 
 // Import the CSS module
 import styles from './AudioSessionControls.module.css';

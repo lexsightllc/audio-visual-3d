@@ -1,6 +1,5 @@
-import { SceneControl, validateSceneControl } from '../schema/scene-control.js';
+import { SceneControl, validateSceneControl } from '../schema/scene-control.mjs';
 import { log } from '../lib/logger.js';
-import type { AudioWorkletMessageEvent } from '../types/audio.js';
 
 export class AudioService {
   private audioContext: AudioContext | null = null;

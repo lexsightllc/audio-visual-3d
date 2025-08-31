@@ -1,7 +1,7 @@
 import React, { Suspense, useState } from 'react';
-import { useAudioAnalyzer } from './hooks/useAudioAnalyzer';
-import Visualizer from './components/Visualizer';
-import { AlertIcon, MicrophoneIcon } from './components/Icons';
+import { useAudioAnalyzer } from './hooks/useAudioAnalyzer.js';
+import Visualizer from './components/Visualizer.jsx';
+import { AlertIcon, MicrophoneIcon } from './components/Icons.js';
 
 const App: React.FC = () => {
   const { audioData, start, error, isMicEnabled, isInitializing } = useAudioAnalyzer();

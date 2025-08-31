@@ -92,4 +92,4 @@ async function decodeAudioData(
   return buffer;
 }
 
-export {createBlob, decode, decodeAudioData, toBase64, splitInterleavedFloat32};
+export { createBlob, decode, decodeAudioData };

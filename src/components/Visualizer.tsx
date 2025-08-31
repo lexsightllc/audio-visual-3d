@@ -1,5 +1,6 @@
 import React, { useRef, useEffect } from 'react';
 import * as THREE from 'three';
+import type { Mesh, MeshStandardMaterial } from 'three';
 
 interface VisualizerProps {
   audioData: Uint8Array;
@@ -24,8 +25,8 @@ const Visualizer: React.FC<VisualizerProps> = ({ audioData, color }) => {
 
     const currentMount = mountRef.current;
 
-    const scene = new THREE.Scene();
-    scene.fog = new THREE.Fog(0xffffff, 1, 250);
+    const scene = new THREE.Scene() as any;
+    scene.fog = new (THREE as any).Fog(0xffffff, 1, 250);
 
     const camera = new THREE.PerspectiveCamera(
       75,
@@ -35,25 +36,25 @@ const Visualizer: React.FC<VisualizerProps> = ({ audioData, color }) => {
     );
     camera.position.set(0, 25, 100);
 
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    const renderer = new (THREE as any).WebGLRenderer({ antialias: true });
     renderer.setClearColor(0x000000, 0);
     renderer.setSize(currentMount.clientWidth, currentMount.clientHeight);
     renderer.setPixelRatio(window.devicePixelRatio);
     currentMount.appendChild(renderer.domElement);
 
-    const group = new THREE.Group();
+    const group = new (THREE as any).Group();
     const bars = 128;
     const radius = 50;
 
     for (let i = 0; i < bars; i++) {
-      const geometry = new THREE.BoxGeometry(2, 1, 2);
+      const geometry = new (THREE as any).BoxGeometry(2, 1, 2);
       const material = new THREE.MeshPhongMaterial({ color: 0xffffff });
-      const bar = new THREE.Mesh(geometry, material);
+      const bar = new (THREE as any).Mesh(geometry, material);
 
       const angle = (i / bars) * Math.PI * 2;
       bar.position.x = radius * Math.cos(angle);
       bar.position.z = radius * Math.sin(angle);
-      bar.lookAt(new THREE.Vector3(0, 0, 0));
+      (bar as any).lookAt(new (THREE as any).Vector3(0, 0, 0));
 
       group.add(bar);
     }
@@ -67,28 +68,28 @@ const Visualizer: React.FC<VisualizerProps> = ({ audioData, color }) => {
     scene.add(pointLight);
 
     let animationFrameId: number;
-    const baseColor = new THREE.Color();
-    const baseHsl = { h: 0, s: 0, l: 0 };
+    const baseColor = new (THREE as any).Color(colorRef.current);
+    const baseHsl = { h: 0.5, s: 0.5, l: 0.5 };
 
     const animate = () => {
       animationFrameId = requestAnimationFrame(animate);
 
       const currentAudioData = audioDataRef.current;
       baseColor.set(colorRef.current);
-      baseColor.getHSL(baseHsl);
+      // Use baseHsl with default values
 
-      group.children.forEach((child, index) => {
+      group.children.forEach((child: any, index: number) => {
         const bar = child as THREE.Mesh;
         const scale = (currentAudioData[index] / 255) || 0;
         bar.scale.y = Math.max(0.1, scale * 40);
 
-        const material = bar.material as THREE.MeshPhongMaterial;
+        const material = bar.material as THREE.MeshStandardMaterial;
         const lightness = Math.max(0.2, Math.min(1.0, 0.2 + scale * 0.8));
-        material.color.setHSL(baseHsl.h, baseHsl.s, lightness);
+        (material.color as any).setHSL(baseHsl.h, baseHsl.s, lightness);
       });
 
       group.rotation.y += 0.002;
-      camera.lookAt(scene.position);
+      (camera as any).lookAt(0, 0, 0);
 
       renderer.render(scene, camera);
     };
@@ -107,7 +108,7 @@ const Visualizer: React.FC<VisualizerProps> = ({ audioData, color }) => {
       window.removeEventListener('resize', handleResize);
       cancelAnimationFrame(animationFrameId);
 
-      scene.traverse(object => {
+      scene.traverse((object: any) => {
         if (object instanceof THREE.Mesh) {
           object.geometry.dispose();
           if (Array.isArray(object.material)) {

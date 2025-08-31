@@ -1,7 +1,7 @@
 import { useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import type { Mesh } from 'three';
-import type { SceneControl } from '../schema/scene-control.js';
+import type { SceneControl } from '../schema/scene-control.mjs';
 
 interface SceneProps {
   control?: SceneControl | null;
@@ -28,11 +28,11 @@ export default function Scene({ control }: SceneProps) {
 
   return (
     <>
-      <ambientLight intensity={0.4} />
+      <ambientLight args={[0x404040, 0.4]} />
       <directionalLight position={[5, 5, 5]} />
       <mesh ref={mesh}>
         <icosahedronGeometry args={[1, 0]} />
-        <meshStandardMaterial color="#00ff83" />
+        <meshStandardMaterial color={0x00ff83} />
       </mesh>
     </>
   );
