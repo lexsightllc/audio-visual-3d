@@ -1,7 +1,7 @@
 # Audio Visual 3D
 
 <div align="center">
-  <img width="800" alt="Audio Visual 3D Demo" src="[https://via.placeholder.com/1200x600?text=Audio+Visual+3D+Demonstration](https://audio-visual-3d-app.netlify.app/)" />
+  <img width="800" alt="Audio Visual 3D Demo" src="(https://audio-visual-3d-app.netlify.app/)" />
 
   [![TypeScript](https://img.shields.io/badge/TypeScript-4.5.5-blue.svg)](https://www.typescriptlang.org/)
   [![Vite](https://img.shields.io/badge/Vite-3.0+-blueviolet.svg)](https://vitejs.dev/)
