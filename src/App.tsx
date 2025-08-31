@@ -122,20 +122,4 @@ const LoadingSpinner: React.FC = () => (
   </div>
 );
 
-const GlobalStyles = () => (
-  <style>{`
-    .bg-grid-pattern {
-      background-image: linear-gradient(to right, rgba(107, 114, 128, 0.2) 1px, transparent 1px), linear-gradient(to bottom, rgba(107, 114, 128, 0.2) 1px, transparent 1px);
-      background-size: 40px 40px;
-    }
-  `}</style>
-);
-
-const AppWithStyles: React.FC = () => (
-  <>
-    <GlobalStyles />
-    <App />
-  </>
-);
-
-export default AppWithStyles;
+export default App;
