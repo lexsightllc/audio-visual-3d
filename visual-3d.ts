@@ -390,7 +390,7 @@ export class GdmLiveAudioVisuals3D extends LitElement {
 
     const material = this.backdrop.material as THREE.ShaderMaterial;
     material.uniforms.u_time.value = t;
-    material.uniforms.u_jitter.value = (Math.random() - 0.5) * 1e-3;
+    material.uniforms.u_jitter.value = (rand() - 0.5) * 1e-3;
 
     if (this.inputAnalyser) {
       const volume = this.getAverageVolume(this.inputAnalyser);

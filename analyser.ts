@@ -28,8 +28,13 @@ export class Analyser {
     return this.dataArray;
   }
 
-  getFrequencyData(): number[] {
+  getFrequencyData(): Uint8Array {
     this.update();
-    return Array.from(this.dataArray);
+    return this.dataArray;
+  }
+
+  copyFrequencyData(targetArray: Uint8Array): void {
+    this.update();
+    targetArray.set(this.dataArray);
   }
 }
