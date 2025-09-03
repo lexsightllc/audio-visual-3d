@@ -31,11 +31,13 @@ export const AudioSessionControls: React.FC<AudioSessionControlsProps> = ({ onSc
 
   const handleSceneUpdate = (updates: Partial<SceneControl>) => {
     updateSceneControl(updates);
-
-    // Propagate the latest complete scene control state
-    if (sceneControl) {
-      onSceneControl?.(sceneControl);
-    }
+    const newSceneControl = {
+      ...sceneControl,
+      ...updates,
+      twist: { ...sceneControl?.twist, ...(updates.twist || {}) },
+      shards: { ...sceneControl?.shards, ...(updates.shards || {}) },
+    } as SceneControl;
+    onSceneControl?.(newSceneControl);
   };
 
   if (!isInitialized) {
