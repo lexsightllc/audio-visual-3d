@@ -1,0 +1,17 @@
+version: '3.9'
+
+services:
+  app:
+    image: node:20.12.2
+    working_dir: /workspace
+    command: npm run dev -- --host 0.0.0.0 --port ${PORT:-5173}
+    volumes:
+      - ./:/workspace
+    ports:
+      - "${PORT:-5173}:${PORT:-5173}"
+    env_file:
+      - .env
+    environment:
+      - NODE_ENV=development
+      - VITE_SEED=${VITE_SEED:-42424242}
+    tty: true

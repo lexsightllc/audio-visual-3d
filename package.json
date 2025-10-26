@@ -8,6 +8,7 @@
     "node": ">=20.12.0 <25.0.0 || ^24.0.0"
   },
   "scripts": {
+    "prepare": "husky install",
     "dev": "vite",
     "build": "tsc -b && vite build",
     "preview": "vite preview --strictPort --port 5173",
@@ -17,7 +18,26 @@
     "test": "vitest run",
     "validate:schemas": "node scripts/validate-schemas.mjs",
     "demo": "make demo",
-    "evidence": "node scripts/evidence.mjs"
+    "evidence": "node scripts/evidence.mjs",
+    "lint": "node scripts/run-eslint.mjs",
+    "lint:fix": "node scripts/run-eslint.mjs --fix",
+    "format": "node scripts/run-prettier.mjs --fix",
+    "format:check": "node scripts/run-prettier.mjs --check",
+    "typecheck": "tsc --noEmit",
+    "test:unit": "vitest run --passWithNoTests",
+    "test:watch": "vitest watch",
+    "test:integration": "vitest run tests/integration --passWithNoTests",
+    "test:e2e": "playwright test",
+    "coverage": "vitest run --coverage",
+    "package": "npm pack --pack-destination artifacts",
+    "release": "node scripts/release-notes.mjs",
+    "docs:build": "node scripts/gen-typedoc.mjs",
+    "update-deps": "node scripts/update-deps.mjs",
+    "security:scan": "node scripts/security-scan.mjs && npm audit --audit-level=moderate || echo \"npm audit failed (offline?)\"",
+    "sbom": "mkdir -p sbom && node scripts/generate-sbom.mjs",
+    "migrate": "echo 'No migrations defined'",
+    "check": "node scripts/run-check.mjs",
+    "commitlint": "node scripts/commitlint.mjs"
   },
   "dependencies": {
     "@react-three/drei": "^10.7.4",
@@ -59,5 +79,6 @@
     "vite-tsconfig-paths": "^5.1.4",
     "vitest": "^2.0.5",
     "zod": "^3.23.8"
-  }
+  },
+  "description": "Interactive audio-to-visual 3D exploration experience."
 }

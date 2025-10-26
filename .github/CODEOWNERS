@@ -1,0 +1,8 @@
+# Default owners
+* @structure-stewards
+
+# Sensitive configuration
+configs/ @structure-stewards
+infra/ @structure-stewards
+ci/ @structure-stewards
+.github/ @structure-stewards

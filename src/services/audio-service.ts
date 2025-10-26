@@ -37,12 +37,12 @@ export class AudioService {
           sampleRate: 48000, // Higher sample rate for better quality before downsampling
           latencyHint: 'interactive'
         });
-        
+
         // Set up state change handler
         this.audioContext.onstatechange = () => {
           const state = this.audioContext?.state;
           log('info', `AudioContext state changed to: ${state}`);
-          
+
           // Notify about state changes
           if (state === 'suspended') {
             log('warn', 'AudioContext is suspended. User interaction may be required.');
@@ -54,15 +54,15 @@ export class AudioService {
       }
 
       // Request microphone access first
-      this.mediaStream = await navigator.mediaDevices.getUserMedia({ 
+      this.mediaStream = await navigator.mediaDevices.getUserMedia({
         audio: {
           echoCancellation: false,
           noiseSuppression: false,
           autoGainControl: false,
           sampleRate: 48000
-        } 
+        }
       });
-      
+
       // Load the worklet module with proper error handling (only once)
       if (!this.audioContext.audioWorklet) {
         throw new Error('AudioWorklet is not supported in this browser');
@@ -83,7 +83,7 @@ export class AudioService {
           throw new Error(fullError);
         }
       }
-      
+
       // Ensure we have a valid audio context
       if (!this.audioContext || !(this.audioContext instanceof (window.AudioContext || (window as any).webkitAudioContext))) {
         throw new Error('Invalid AudioContext instance');
@@ -110,7 +110,7 @@ export class AudioService {
           this.workletNode.connect(this.audioContext.destination);
           log('info', 'AudioWorkletNode created and connected');
         } catch (err) {
-          console.error('Failed to create AudioWorkletNode:', err);
+          log('error', 'Failed to create AudioWorkletNode', { error: String(err) });
           throw new Error('Failed to initialize audio processing');
         }
       }
@@ -120,10 +120,10 @@ export class AudioService {
       if (this.workletNode) {
         source.connect(this.workletNode);
       }
-      
+
       return true;
     } catch (error) {
-      console.error('AudioService initialization failed:', error);
+      log('error', 'AudioService initialization failed', { error: String(error) });
       this.onError?.(error as Error);
       return false;
     }
@@ -136,27 +136,27 @@ export class AudioService {
 
     try {
       this.onSessionUpdate?.('connecting');
-      
+
       // Request ephemeral token from our server
       const response = await fetch('/api/openai/session', { method: 'POST' });
       if (!response.ok) {
         throw new Error(`Failed to get session: ${response.statusText}`);
       }
-      
+
       const session = await response.json();
       this.sessionId = session.id;
       this.clientSecret = session.client_secret.value;
-      
+
       // Set up WebRTC connection
       await this.setupWebRTC();
-      
+
       // Start audio processing
       await this.audioContext.resume();
       this.onSessionUpdate?.('connected');
-      
+
       return true;
     } catch (error) {
-      console.error('Failed to start session:', error);
+      log('error', 'Failed to start session', { error: String(error) });
       this.onSessionUpdate?.('disconnected');
       this.onError?.(error as Error);
       return false;
@@ -165,7 +165,7 @@ export class AudioService {
 
   private async setupWebRTC() {
     if (!this.clientSecret) throw new Error('No client secret available');
-    
+
     this.peerConnection = new RTCPeerConnection({
       iceServers: [{ urls: 'stun:stun.l.google.com:19302' }],
     });
@@ -239,26 +239,26 @@ export class AudioService {
         this.workletNode.disconnect();
         this.workletNode = null;
       }
-      
+
       if (this.peerConnection) {
         this.peerConnection.close();
         this.peerConnection = null;
       }
-      
+
       if (this.mediaStream) {
         this.mediaStream.getTracks().forEach(track => track.stop());
         this.mediaStream = null;
       }
-      
+
       if (this.audioContext) {
         await this.audioContext.close();
         this.audioContext = null;
       }
-      
+
       this.onSessionUpdate?.('disconnected');
       return true;
     } catch (error) {
-      console.error('Error stopping session:', error);
+      log('error', 'Error stopping session', { error: String(error) });
       this.onError?.(error as Error);
       return false;
     }

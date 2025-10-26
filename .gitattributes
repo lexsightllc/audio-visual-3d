@@ -1,19 +1,14 @@
-# Auto detect text files and perform LF normalization
 * text=auto eol=lf
 
-# Explicitly declare text files that should always be normalized
-*.css text
-*.html text
-*.js text
-*.json text
-*.md text
-*.ts text
-*.tsx text
-*.vue text
-*.yaml text
-*.yml text
+*.sh text eol=lf
+*.ps1 text eol=crlf
+*.ts text diff=ts
+docs/adr/* linguist-documentation
 
-# Binary files that should not be modified
+# Ensure UTF-8 for documentation
+*.md text working-tree-encoding=UTF-8
+
+# Binary assets
 *.png binary
 *.jpg binary
 *.jpeg binary

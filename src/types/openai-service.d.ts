@@ -6,11 +6,11 @@ declare class OpenAIService {
     outputAudioContext: AudioContext,
     outputNode: AudioNode
   );
-  
+
   startSession(): Promise<void>;
   startAudioCapture(): Promise<void>;
   stopSession(): void;
-  
+
   // Internal state
   private onControlUpdate: (data: unknown) => void;
   private outCtx: AudioContext;

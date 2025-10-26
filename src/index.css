@@ -246,17 +246,17 @@ select:focus {
   .overlay {
     padding: 1rem;
   }
-  
+
   .control-panel {
     max-width: 100%;
   }
-  
+
   .control-row {
     flex-direction: column;
     align-items: flex-start;
     gap: 0.5rem;
   }
-  
+
   .slider-container {
     width: 100%;
   }

@@ -10,10 +10,10 @@ const __dirname = dirname(__filename);
 // Generate the JSON file with license information
 try {
   execSync('npx license-checker --production --json --out THIRD_PARTY_NOTICES.json');
-  
+
   // Read and process the JSON file
   const licenses = JSON.parse(readFileSync('THIRD_PARTY_NOTICES.json', 'utf8'));
-  
+
   let output = 'THIRD-PARTY SOFTWARE NOTICES AND INFORMATION\n\n' +
     'This file contains third-party software components and their respective license information.\n\n';
 
@@ -27,10 +27,10 @@ try {
 
   // Write the final output
   writeFileSync('THIRD_PARTY_NOTICES.txt', output);
-  
+
   // Clean up
   unlinkSync('THIRD_PARTY_NOTICES.json');
-  
+
   console.log('Successfully generated THIRD_PARTY_NOTICES.txt');
 } catch (error) {
   console.error('Error generating third-party notices:', error);

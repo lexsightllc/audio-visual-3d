@@ -1,54 +1,81 @@
+SHELL := /bin/bash
+.DEFAULT_GOAL := help
+
 NODE_VERSION ?= 20.12.2
-SEED ?= 42424242
 
-.PHONY: setup dev build preview test validate demo demo\:safe evidence clean
-.RECIPEPREFIX := >
+.PHONY: help bootstrap dev lint fmt typecheck test e2e coverage build package release update-deps security-scan sbom gen-docs migrate clean check
 
-setup:
-> npm ci
-> npx playwright install --with-deps
+help:
+@echo "Available targets:"
+@echo "  bootstrap     Install dependencies, configure hooks, and validate the toolchain."
+@echo "  dev           Launch the Vite development server."
+@echo "  lint          Run ESLint across the project."
+@echo "  fmt           Format the codebase (use -- ARGS=--check for verification)."
+@echo "  typecheck     Execute strict TypeScript checks."
+@echo "  test          Run unit tests."
+@echo "  e2e           Run end-to-end browser tests."
+@echo "  coverage      Generate coverage reports."
+@echo "  build         Build production assets."
+@echo "  package       Produce distributable artifacts."
+@echo "  release       Prepare and tag a semantic release."
+@echo "  update-deps   Suggest dependency updates using batching rules."
+@echo "  security-scan Perform dependency and secret scans."
+@echo "  sbom          Generate a CycloneDX software bill of materials."
+@echo "  gen-docs      Rebuild API documentation."
+@echo "  migrate       Run schema migrations if present."
+@echo "  clean         Remove build artifacts."
+@echo "  check         Execute the complete quality gate locally."
+
+bootstrap:
+./scripts/bootstrap.sh
 
 dev:
-> npm run dev
+./scripts/dev.sh
+
+lint:
+./scripts/lint.sh $(ARGS)
+
+fmt:
+./scripts/fmt.sh $(ARGS)
+
+typecheck:
+./scripts/typecheck.sh
+
+test:
+./scripts/test.sh
+
+e2e:
+./scripts/e2e.sh
+
+coverage:
+./scripts/coverage.sh
 
 build:
-> npm run build
+./scripts/build.sh
 
-preview:
-> npm run preview
+package:
+./scripts/package.sh
 
-validate:
-> npm run validate:schemas
+release:
+./scripts/release.sh $(ARGS)
 
-demo: build
-> # start preview in background
-> npm run preview & echo $$! > .preview.pid
-> # give server a moment
-> sleep 2
-> VITE_SEED=$(SEED) node scripts/smoke-e2e.mjs
-> # stop preview
-> -kill `cat .preview.pid` && rm .preview.pid
-> @echo "Artifacts:"
-> @ls -lah artifacts
+update-deps:
+./scripts/update-deps.sh $(ARGS)
 
-demo\:safe:
-> -npm run build
-> # start preview in background
-> npm run preview & echo $$! > .preview.pid
-> # give server a moment
-> sleep 2
-> VITE_SEED=$(SEED) node scripts/smoke-e2e.mjs || node scripts/synthetic-artifacts.mjs
-> # stop preview
-> -kill `cat .preview.pid` && rm .preview.pid
-> node scripts/generate-exec-summary.mjs
-> node scripts/metrics.mjs
-> node scripts/assert-evidence.mjs
-> @echo "Artifacts:"
-> @ls -lah artifacts
+security-scan:
+./scripts/security-scan.sh
 
-evidence:
-> npm run evidence
+sbom:
+./scripts/sbom.sh
+
+gen-docs:
+./scripts/gen-docs.sh
+
+migrate:
+./scripts/migrate.sh $(ARGS)
 
 clean:
-> rm -rf dist artifacts logs reports
-> mkdir -p artifacts logs reports
+./scripts/clean.sh
+
+check:
+./scripts/check.sh
