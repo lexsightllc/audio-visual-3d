@@ -1,6 +1,6 @@
 /**
  * @license
- * SPDX-License-Identifier: Apache-2.0
+ * SPDX-License-Identifier: MPL-2.0
 */
 const vs = `#define STANDARD
 varying vec3 vViewPosition;
