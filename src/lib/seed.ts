@@ -1,3 +1,7 @@
+/*
+ * Copyright 2025 Lexsight LLC
+ * SPDX-License-Identifier: MPL-2.0
+ */
 // deterministic seed helper
 import seedrandom from "seedrandom";
 

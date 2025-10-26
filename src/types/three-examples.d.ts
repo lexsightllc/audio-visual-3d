@@ -1,3 +1,7 @@
+/*
+ * Copyright 2025 Lexsight LLC
+ * SPDX-License-Identifier: MPL-2.0
+ */
 // Type definitions for three.js examples
 
 declare module 'three/examples/jsm/postprocessing/EffectComposer' {

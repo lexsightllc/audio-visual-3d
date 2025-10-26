@@ -1,3 +1,7 @@
+/*
+ * Copyright 2025 Lexsight LLC
+ * SPDX-License-Identifier: MPL-2.0
+ */
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'node:fs';
 
 if (!existsSync('reports')) mkdirSync('reports', { recursive: true });

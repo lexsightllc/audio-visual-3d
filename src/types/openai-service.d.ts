@@ -1,3 +1,7 @@
+/*
+ * Copyright 2025 Lexsight LLC
+ * SPDX-License-Identifier: MPL-2.0
+ */
 import type { AudioContext, AudioNode } from 'standardized-audio-context';
 
 declare class OpenAIService {

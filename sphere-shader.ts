@@ -1,7 +1,7 @@
-/**
- * @license
+/*
+ * Copyright 2025 Lexsight LLC
  * SPDX-License-Identifier: MPL-2.0
-*/
+ */
 const vs = `#define STANDARD
 varying vec3 vViewPosition;
 #ifdef USE_TRANSMISSION

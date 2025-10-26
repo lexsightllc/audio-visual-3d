@@ -1,3 +1,7 @@
+/*
+ * Copyright 2025 Lexsight LLC
+ * SPDX-License-Identifier: MPL-2.0
+ */
 // Type definitions for visual-3d module
 declare module '*.glsl' {
   const content: string;

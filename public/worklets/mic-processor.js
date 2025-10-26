@@ -1,3 +1,7 @@
+/*
+ * Copyright 2025 Lexsight LLC
+ * SPDX-License-Identifier: MPL-2.0
+ */
 // A lightweight capture worklet that processes audio with low latency
 // - Emits Float32Array frames via port.postMessage
 // - Optionally down-samples to 16 kHz (required by some providers)

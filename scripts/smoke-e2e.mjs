@@ -1,3 +1,7 @@
+/*
+ * Copyright 2025 Lexsight LLC
+ * SPDX-License-Identifier: MPL-2.0
+ */
 // Headless preview + screenshot + logs + checksums
 import { chromium } from "playwright";
 import { createHash } from "node:crypto";

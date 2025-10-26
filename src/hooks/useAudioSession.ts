@@ -1,3 +1,7 @@
+/*
+ * Copyright 2025 Lexsight LLC
+ * SPDX-License-Identifier: MPL-2.0
+ */
 import { useState, useEffect, useCallback } from 'react';
 import { audioService } from '../services/audio-service.js';
 import { log } from '../lib/logger.js';

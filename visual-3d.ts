@@ -1,5 +1,5 @@
-/**
- * @license
+/*
+ * Copyright 2025 Lexsight LLC
  * SPDX-License-Identifier: MPL-2.0
  */
 

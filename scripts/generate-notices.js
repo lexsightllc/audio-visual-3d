@@ -1,3 +1,7 @@
+/*
+ * Copyright 2025 Lexsight LLC
+ * SPDX-License-Identifier: MPL-2.0
+ */
 import { readFileSync, writeFileSync, unlinkSync } from 'fs';
 import { execSync } from 'child_process';
 import { fileURLToPath } from 'url';

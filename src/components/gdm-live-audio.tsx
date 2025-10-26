@@ -1,3 +1,7 @@
+/*
+ * Copyright 2025 Lexsight LLC
+ * SPDX-License-Identifier: MPL-2.0
+ */
 import { LitElement, css, html } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
 import OpenAIService from '../services/openai-service.js';

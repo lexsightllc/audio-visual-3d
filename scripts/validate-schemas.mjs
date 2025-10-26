@@ -1,3 +1,7 @@
+/*
+ * Copyright 2025 Lexsight LLC
+ * SPDX-License-Identifier: MPL-2.0
+ */
 import { readFileSync, readdirSync } from "node:fs";
 import Ajv from "ajv/dist/2020.js";
 const ajv = new Ajv({ allErrors: true, strict: true });

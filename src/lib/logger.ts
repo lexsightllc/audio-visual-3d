@@ -1,3 +1,7 @@
+/*
+ * Copyright 2025 Lexsight LLC
+ * SPDX-License-Identifier: MPL-2.0
+ */
 // browser logger that mirrors to server (optional) and console
 type LogLevel = "info" | "warn" | "error";
 const endpoint = import.meta.env.VITE_LOG_ENDPOINT || "/__logs";

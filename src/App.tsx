@@ -1,3 +1,7 @@
+/*
+ * Copyright 2025 Lexsight LLC
+ * SPDX-License-Identifier: MPL-2.0
+ */
 import React, { Suspense, useState, useEffect } from 'react';
 import { useAudioAnalyzer } from './hooks/useAudioAnalyzer.js';
 import Visualizer from './components/Visualizer.jsx';
