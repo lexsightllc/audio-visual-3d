@@ -1,92 +1,140 @@
 # Audio Visual 3D
 
-<div align="center">
-  <a href="https://audio-visual-3d-app.netlify.app/" target="_blank">
-    <img width="800" alt="Audio Visual 3D Demo" src="https://via.placeholder.com/1200x600?text=Audio+Visual+3D+Demonstration" />
-  </a>
+Audio Visual 3D demonstrates a real-time, voice-driven 3D experience powered by
+React, Three.js, and Vite. Spoken input is analysed to generate responsive
+visualisations in an immersive scene.
 
-  [![TypeScript](https://img.shields.io/badge/TypeScript-4.5.5-blue.svg)](https://www.typescriptlang.org/)
-  [![Vite](https://img.shields.io/badge/Vite-3.0+-blueviolet.svg)](https://vitejs.dev/)
-  [![Three.js](https://img.shields.io/badge/Three.js-r140-000000.svg)](https://threejs.org/)
-</div>
+## Table of Contents
 
-Audio Visual 3D demonstrates real-time, voice‑driven 3D visuals built with modern web technologies. The scene reacts to microphone input and leverages AI services to respond to your conversation.
-
-**Live demo:** https://audio-visual-3d-app.netlify.app/
-
-## Features
-
-- Real-time 3D rendering with adaptive audio visualisations
-- Voice chat interface that uses AI services to react to spoken input
-- Built with Three.js and TypeScript for maintainable, high‑quality graphics
-- Vite-powered development for fast builds and hot reloading
-- Responsive design that works on desktop and mobile
+- [Prerequisites](#prerequisites)
+- [Getting Started](#getting-started)
+- [Developer Tasks](#developer-tasks)
+- [Project Structure](#project-structure)
+- [Testing Strategy](#testing-strategy)
+- [Observability](#observability)
+- [Security](#security)
+- [Documentation](#documentation)
+- [License](#license)
 
 ## Prerequisites
 
-- Node.js 20.12 or later (but < 21)
-- npm 9+
-- A modern web browser (Chrome, Firefox, Safari, Edge)
+- Node.js 20.12.x (see `.nvmrc`)
+- npm 10.x (bundled with Node 20)
+- Docker (optional, for `docker-compose` workflows)
 
-## Quick Start
+## Getting Started
 
-1. **Clone the repository**
+1. **Bootstrap the toolchain**
    ```bash
-   git clone https://github.com/your-username/audio-visual-3d.git
-   cd audio-visual-3d
+   scripts/bootstrap.sh
    ```
+   The bootstrap step installs dependencies, configures Git hooks, installs
+   Playwright browsers, and enforces the Conventional Commit template.
 
-2. **Install dependencies**
+2. **Configure environment variables**
    ```bash
-   npm install
+   cp .env.example .env
+   # Update values as needed without committing secrets
    ```
 
-3. **Set up environment variables**
-   Create a `.env` file in the root directory:
-   ```env
-   VITE_GOOGLE_API_KEY=your_api_key_here
-   ```
-
-4. **Start the development server**
+3. **Launch the developer server**
    ```bash
-   npm run dev
+   scripts/dev.sh
+   ```
+   The Vite dev server will be available at http://localhost:5173 by default.
+
+4. **Alternative: Docker Compose**
+   ```bash
+   docker compose up
    ```
 
-5. **Open your browser**
-   Visit `http://localhost:5173` to see the app in action.
+## Developer Tasks
 
-## Build for Production
+> Offline-friendly linting and formatting scripts are provided to keep automation working without third-party downloads.
 
-```bash
-npm run build
+| Command | Description |
+| ------- | ----------- |
+| `scripts/bootstrap.sh` / `.ps1` | Install dependencies, Playwright browsers, Husky hooks, and commit template. |
+| `scripts/dev.sh` / `.ps1` | Start the Vite development server with hot reloading. |
+| `scripts/lint.sh [--fix]` / `.ps1` | Run structural lint checks (console/debugger/TODO detection) with optional `--fix` support for replacing `var`. |
+| `scripts/fmt.sh [--check]` / `.ps1` | Normalize trailing whitespace and final newlines (`--check` for verification). |
+| `scripts/typecheck.sh` / `.ps1` | Execute strict TypeScript checks with `tsc --noEmit`. |
+| `scripts/test.sh` / `.ps1` | Run unit tests via Vitest. |
+| `scripts/e2e.sh` / `.ps1` | Run Playwright end-to-end scenarios. |
+| `scripts/coverage.sh` / `.ps1` | Generate combined coverage reports (text and LCOV). |
+| `scripts/build.sh` / `.ps1` | Produce production-ready bundles using Vite. |
+| `scripts/package.sh` / `.ps1` | Create an npm package tarball inside `artifacts/`. |
+| `scripts/release.sh` / `.ps1` | Compile release notes from the changelog and write them to reports/release-notes.md. |
+| `scripts/update-deps.sh` / `.ps1` | Print dependency inventory for manual update planning in restricted environments. |
+| `scripts/security-scan.sh` / `.ps1` | Run custom secret heuristics and attempt `npm audit` (tolerant to offline mode). |
+| `scripts/sbom.sh` / `.ps1` | Generate a lightweight SBOM summary under `sbom/`. |
+| `scripts/gen-docs.sh` / `.ps1` | Summarise exported symbols into `docs/api/README.md`. |
+| `scripts/migrate.sh` / `.ps1` | Execute server-side migrations when defined. |
+| `scripts/clean.sh` / `.ps1` | Remove build artifacts and recreate staging directories. |
+| `scripts/check.sh` / `.ps1` | Orchestrate lint, typecheck, formatting check, unit, e2e, coverage, and security scans. |
+
+Each script is mirrored in PowerShell to keep macOS/Linux and Windows workflows
+in sync. The `Makefile` provides matching phony targets for integration with CI
+pipelines and developer tooling.
+
+## Project Structure
+
+```
+.
+├── assets/                # Shared static assets
+├── ci/                    # Future CI provisioning assets
+├── configs/               # Configuration templates and overrides
+├── data/                  # Sample datasets
+├── docs/
+│   ├── adr/               # Architecture decision records
+│   └── api/               # Generated API docs (ignored)
+├── sbom/                  # Generated software bills of materials
+├── scripts/               # Developer automation toolbelt
+├── src/                   # Application source (React + Three.js)
+├── tests/
+│   ├── unit/              # Vitest unit suites
+│   ├── integration/       # Integration tests
+│   └── e2e/               # Playwright end-to-end scenarios
+└── reports/               # Status reports and evidence artifacts
 ```
 
-## Technologies Used
+## Testing Strategy
 
-- [Vite](https://vitejs.dev/) - Next Generation Frontend Tooling
-- [Three.js](https://threejs.org/) - 3D Library
-- [TypeScript](https://www.typescriptlang.org/) - Type-Safe JavaScript
-- [Lit](https://lit.dev/) - Simple & Fast Web Components
+- **Unit tests** live in `tests/unit` and mirror module structure. Vitest is
+  configured with jsdom and strict coverage thresholds.
+- **Integration tests** belong in `tests/integration` and should isolate external
+  dependencies via fixtures in `tests/fixtures`.
+- **End-to-end tests** in `tests/e2e` use Playwright with Given/When/Then
+  commentary to emphasise user-visible behaviour.
+- Run `make test` for unit tests and `make e2e` for browser coverage. Execute
+  `make check` to reproduce the CI quality gate locally.
 
-## Contributing
+## Observability
 
-Contributions via issues or pull requests are welcome.
+Structured logging, metrics, and tracing hooks are being introduced. Refer to
+`project.yaml` and future ADRs for implementation milestones. Contributions
+should prefer structured logs and avoid leaking sensitive data.
+
+## Security
+
+- Follow the [Code of Conduct](CODE_OF_CONDUCT.md) and
+  [Contributing Guidelines](CONTRIBUTING.md).
+- Never commit secrets; use `.env.example` as the baseline template.
+- Run `make security-scan` before raising a pull request.
+- Dependency updates are batched through the Renovate/Dependabot-friendly rules
+  in `scripts/update-deps.sh`.
 
 ## Documentation
 
-- [LICENSE](LICENSE) – Apache License 2.0 terms
-- [NOTICE](NOTICE) – attribution notices
-- [PRIVACY](PRIVACY.md)
-- [SECURITY](SECURITY.md)
-- [ETHICS](ETHICS.md)
-- [THIRD_PARTY_NOTICES](THIRD_PARTY_NOTICES.txt)
+Key documents:
+
+- [CHANGELOG](CHANGELOG.md) for release history.
+- [CONTRIBUTING](CONTRIBUTING.md) for contribution workflow.
+- [CODE_OF_CONDUCT](CODE_OF_CONDUCT.md) for community expectations.
+- [project.yaml](project.yaml) for metadata and ownership.
+- [docs/adr](docs/adr) for architectural decisions.
 
 ## License
 
-This project is licensed under the Apache License 2.0. See the [LICENSE](LICENSE) and [NOTICE](NOTICE) files for details.
-
-## Acknowledgments
-
-- [Three.js](https://threejs.org/) for amazing 3D capabilities
-- [Vite](https://vitejs.dev/) for the excellent developer experience
-- All contributors who've helped improve this project
+This project is licensed under the Apache License 2.0. See [LICENSE](LICENSE)
+and [NOTICE](NOTICE) for details.

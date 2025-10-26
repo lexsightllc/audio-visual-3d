@@ -1,0 +1,38 @@
+name: audio-visual-3d
+summary: Interactive audio-to-visual 3D exploration experience built with React, Vite, and Three.js.
+primary_language: TypeScript
+package_manager:
+  name: npm
+  version: '10'
+runtime:
+  node: 20.12.2
+entrypoints:
+  - name: dev-server
+    command: npm run dev
+    description: Launch the Vite development server with hot module replacement.
+    port: 5173
+  - name: api-server
+    command: npm run server
+    description: Start the Express API bridge.
+    port: 8080
+service_type: web-application
+infrastructure:
+  container_runtime: docker
+  docker_compose: docker-compose.yml
+observability:
+  logging: structured
+  metrics: pending
+  tracing: pending
+tooling:
+  lint: Custom TypeScript-based heuristics (offline friendly)
+  format: Whitespace normalisation via custom formatter
+owners:
+  - name: Structure Steward Team
+    email: maintainers@example.com
+release:
+  strategy: semantic-versioning
+  default_branch: main
+  staging_branch: staging
+ci_cd:
+  platform: github-actions
+  workflow: .github/workflows/ci.yml

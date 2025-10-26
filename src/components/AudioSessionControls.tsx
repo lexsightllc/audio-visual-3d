@@ -55,33 +55,33 @@ export const AudioSessionControls: React.FC<AudioSessionControlsProps> = ({ onSc
         Status: {isConnected ? 'Connected' : 'Disconnected'}
         {isLoading && ' (Loading...)'}
       </div>
-      
+
       {error && <div className={styles.error}>Error: {error.message}</div>}
-      
+
       <div className={styles.controls}>
         {!isConnected ? (
-          <button 
+          <button
             className={styles.button}
-            onClick={handleStart} 
+            onClick={handleStart}
             disabled={isLoading}
           >
             Start Session
           </button>
         ) : (
-          <button 
+          <button
             className={styles.button}
-            onClick={handleStop} 
+            onClick={handleStop}
             disabled={isLoading}
           >
             Stop Session
           </button>
         )}
       </div>
-      
+
       {sceneControl && (
         <div className={styles.sceneControls}>
           <h3>Scene Controls</h3>
-          
+
           <div className={styles.controlGroup}>
             <label className={styles.label}>
               Arousal: {sceneControl.arousal.toFixed(2)}
@@ -96,7 +96,7 @@ export const AudioSessionControls: React.FC<AudioSessionControlsProps> = ({ onSc
               />
             </label>
           </div>
-          
+
           <div className={styles.controlGroup}>
             <label className={styles.label}>
               Valence: {sceneControl.valence.toFixed(2)}
@@ -111,7 +111,7 @@ export const AudioSessionControls: React.FC<AudioSessionControlsProps> = ({ onSc
               />
             </label>
           </div>
-          
+
           <div className={styles.controlGroup}>
             <label className={styles.label}>
               Twist Magnitude: {sceneControl.twist.magnitude.toFixed(2)}
@@ -121,14 +121,14 @@ export const AudioSessionControls: React.FC<AudioSessionControlsProps> = ({ onSc
                 max="1"
                 step="0.01"
                 value={sceneControl.twist.magnitude}
-                onChange={(e) => handleSceneUpdate({ 
-                  twist: { ...sceneControl.twist, magnitude: parseFloat(e.target.value) } 
+                onChange={(e) => handleSceneUpdate({
+                  twist: { ...sceneControl.twist, magnitude: parseFloat(e.target.value) }
                 })}
                 className={styles.rangeInput}
               />
             </label>
           </div>
-          
+
           <div className={styles.controlGroup}>
             <label className={styles.label}>
               Palette:

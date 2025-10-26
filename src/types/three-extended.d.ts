@@ -2,21 +2,21 @@
 declare module 'three' {
   // Re-export everything from three
   export * from 'three';
-  
+
   // Add any missing types or overrides here
   export class Scene {
     background: any;
     add(...object: any[]): void;
     remove(...object: any[]): void;
   }
-  
+
   export class PerspectiveCamera {
     constructor(fov: number, aspect: number, near: number, far: number);
     position: { x: number; y: number; z: number; set(x: number, y: number, z: number): void };
     aspect: number;
     updateProjectionMatrix(): void;
   }
-  
+
   export class WebGLRenderer {
     domElement: HTMLElement;
     setSize(width: number, height: number, updateStyle?: boolean): void;
@@ -24,7 +24,7 @@ declare module 'three' {
     render(scene: Scene, camera: Camera): void;
     dispose(): void;
   }
-  
+
   export class Mesh {
     constructor(geometry?: any, material?: any);
     geometry: any;
@@ -34,13 +34,13 @@ declare module 'three' {
     position: { x: number; y: number; z: number; set(x: number, y: number, z: number): void };
     rotation: { x: number; y: number; z: number; set(x: number, y: number, z: number): void };
   }
-  
+
   export class BufferGeometry {
     attributes: Record<string, any>;
     setAttribute(name: string, attribute: any): void;
     dispose(): void;
   }
-  
+
   export class BufferAttribute {
     constructor(array: ArrayLike<number>, itemSize: number, normalized?: boolean);
     count: number;
@@ -49,14 +49,14 @@ declare module 'three' {
     getY(index: number): number;
     getZ(index: number): number;
   }
-  
+
   export class IcosahedronGeometry {
     constructor(radius?: number, detail?: number);
     attributes: Record<string, any>;
     setAttribute(name: string, attribute: any): void;
     dispose(): void;
   }
-  
+
   export class MeshStandardMaterial {
     constructor(parameters?: any);
     color: { set: (color: any) => void };
@@ -64,53 +64,53 @@ declare module 'three' {
     roughness: number;
     dispose(): void;
   }
-  
+
   export class MeshPhongMaterial {
     constructor(parameters?: any);
     color: { set: (color: any) => void };
     shininess: number;
     dispose(): void;
   }
-  
+
   export class MeshBasicMaterial {
     constructor(parameters?: any);
     color: { set: (color: any) => void };
     wireframe: boolean;
     dispose(): void;
   }
-  
+
   export class PointLight {
     constructor(color?: any, intensity?: number, distance?: number, decay?: number);
     position: { x: number; y: number; z: number; set(x: number, y: number, z: number): void };
   }
-  
+
   export class AmbientLight {
     constructor(color?: any, intensity?: number);
   }
-  
+
   export class DirectionalLight {
     constructor(color?: any, intensity?: number);
     position: { x: number; y: number; z: number; set(x: number, y: number, z: number): void };
   }
-  
+
   export class Color {
     constructor(color?: any);
     set(color: any): Color;
   }
-  
+
   export class Vector2 {
     constructor(x?: number, y?: number);
     x: number;
     y: number;
   }
-  
+
   export class Vector3 {
     constructor(x?: number, y?: number, z?: number);
     x: number;
     y: number;
     z: number;
   }
-  
+
   export class Object3D {
     position: { x: number; y: number; z: number; set(x: number, y: number, z: number): void };
     rotation: { x: number; y: number; z: number; set(x: number, y: number, z: number): void };
@@ -119,7 +119,7 @@ declare module 'three' {
     remove(...object: any[]): void;
     dispose?(): void;
   }
-  
+
   export class Material {
     dispose(): void;
   }

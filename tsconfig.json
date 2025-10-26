@@ -2,7 +2,11 @@
   "compilerOptions": {
     "target": "ES2020",
     "useDefineForClassFields": true,
-    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "lib": [
+      "ES2020",
+      "DOM",
+      "DOM.Iterable"
+    ],
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
     "skipLibCheck": true,
@@ -18,7 +22,9 @@
     "esModuleInterop": true,
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": [
+        "./src/*"
+      ]
     },
     "allowJs": true,
     "allowSyntheticDefaultImports": true,
@@ -33,9 +39,7 @@
   },
   "include": [
     "src/**/*",
-    "src/**/*.ts",
-    "src/**/*.tsx",
-    "src/**/*.mts",
+    "tests/**/*",
     "**/*.d.ts"
   ],
   "exclude": [
@@ -43,10 +47,5 @@
     "dist",
     "server",
     "**/node_modules/*"
-  ],
-  "references": [
-    {
-      "path": "./tsconfig.node.json"
-    }
   ]
 }

@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { audioService } from '../services/audio-service.js';
+import { log } from '../lib/logger.js';
 import type { SceneControl } from '../schema/scene-control.mjs';
 
 export function useAudioSession() {
@@ -12,23 +13,23 @@ export function useAudioSession() {
   // Initialize audio service on first user interaction
   const initAudio = useCallback(async () => {
     if (isInitialized) return;
-    
+
     try {
       setIsLoading(true);
       const success = await audioService.initialize();
       setIsInitialized(success);
-      
+
       // Set up event listeners
       audioService.onSessionUpdate = (state: 'connecting' | 'connected' | 'disconnected') => {
         setIsConnected(state === 'connected');
       };
-      
+
       audioService.onError = (err: Error) => {
-        console.error('AudioService error:', err);
+        log('error', 'AudioService error', { error: String(err) });
         setError(err);
         setIsConnected(false);
       };
-      
+
       audioService.onSceneControl = (control: Partial<SceneControl>) => {
         setSceneControl((prev: SceneControl | null) => {
           // Create a new object with default values
@@ -46,7 +47,7 @@ export function useAudioSession() {
             },
             palette: 'nocturne'
           };
-          
+
           // Merge with previous state and new control values
           return {
             ...defaultState,
@@ -65,38 +66,38 @@ export function useAudioSession() {
           };
         });
       };
-      
+
     } catch (err) {
-      console.error('Failed to initialize audio service:', err);
+      log('error', 'Failed to initialize audio service', { error: String(err) });
       setError(err instanceof Error ? err : new Error(String(err)));
     } finally {
       setIsLoading(false);
     }
   }, [isInitialized]);
-  
+
   // Set up a one-time click handler for the document to initialize audio
   useEffect(() => {
     if (isInitialized) return;
-    
+
     const handleFirstInteraction = () => {
       initAudio();
       document.removeEventListener('click', handleFirstInteraction);
       document.removeEventListener('keydown', handleFirstInteraction);
     };
-    
+
     document.addEventListener('click', handleFirstInteraction, { once: true });
     document.addEventListener('keydown', handleFirstInteraction, { once: true });
-    
+
     return () => {
       document.removeEventListener('click', handleFirstInteraction);
       document.removeEventListener('keydown', handleFirstInteraction);
     };
   }, [isInitialized, initAudio]);
-  
+
   // Cleanup on unmount
   useEffect(() => {
     return () => {
-      audioService.stopSession().catch(console.error);
+      audioService.stopSession().catch((err) => log('error', 'Error stopping session', { error: String(err) }));
     };
   }, []);
 
@@ -105,7 +106,7 @@ export function useAudioSession() {
       setError(new Error('Audio service not initialized'));
       return false;
     }
-    
+
     try {
       setIsLoading(true);
       const success = await audioService.startSession();
@@ -114,7 +115,7 @@ export function useAudioSession() {
       }
       return true;
     } catch (err) {
-      console.error('Error starting session:', err);
+      log('error', 'Error starting session', { error: String(err) });
       setError(err instanceof Error ? err : new Error(String(err)));
       return false;
     } finally {
@@ -128,7 +129,7 @@ export function useAudioSession() {
       await audioService.stopSession();
       return true;
     } catch (err) {
-      console.error('Error stopping session:', err);
+      log('error', 'Error stopping session', { error: String(err) });
       setError(err instanceof Error ? err : new Error(String(err)));
       return false;
     } finally {

@@ -2,10 +2,10 @@
 
 declare module 'three' {
   import * as _THREE from 'three';
-  
+
   // Export everything from the main THREE module
   export * from 'three';
-  
+
   // Extended type definitions
   export class Scene {
     background: any;
@@ -14,14 +14,14 @@ declare module 'three' {
 
     remove(...object: any[]): void;
   }
-  
+
   export class PerspectiveCamera {
     constructor(fov?: number, aspect?: number, near?: number, far?: number);
     position: { x: number; y: number; z: number; set(x: number, y: number, z: number): void };
     aspect: number;
     updateProjectionMatrix(): void;
   }
-  
+
   export class WebGLRenderer {
     constructor(parameters?: any);
     domElement: HTMLElement;
@@ -30,7 +30,7 @@ declare module 'three' {
     render(scene: any, camera: any): void;
     dispose(): void;
   }
-  
+
   export class Mesh {
     geometry: any;
     material: any;
@@ -39,14 +39,14 @@ declare module 'three' {
     scale: { x: number; y: number; z: number; set(x: number, y: number, z: number): void };
     userData: Record<string, any>;
   }
-  
+
   export class IcosahedronGeometry {
     constructor(radius?: number, detail?: number);
     attributes: Record<string, any>;
     setAttribute(name: string, attribute: any): void;
     dispose(): void;
   }
-  
+
   export class BufferAttribute {
     constructor(array: ArrayLike<number>, itemSize: number, normalized?: boolean);
     count: number;
@@ -55,7 +55,7 @@ declare module 'three' {
     getY(index: number): number;
     getZ(index: number): number;
   }
-  
+
   export class MeshStandardMaterial {
     constructor(parameters?: any);
     color: { set: (color: any) => void };
@@ -63,53 +63,53 @@ declare module 'three' {
     roughness: number;
     dispose(): void;
   }
-  
+
   export class MeshPhongMaterial {
     constructor(parameters?: any);
     color: { set: (color: any) => void };
     shininess: number;
     dispose(): void;
   }
-  
+
   export class MeshBasicMaterial {
     constructor(parameters?: any);
     color: { set: (color: any) => void };
     wireframe: boolean;
     dispose(): void;
   }
-  
+
   export class PointLight {
     constructor(color?: any, intensity?: number, distance?: number, decay?: number);
     position: { x: number; y: number; z: number; set(x: number, y: number, z: number): void };
   }
-  
+
   export class AmbientLight {
     constructor(color?: any, intensity?: number);
   }
-  
+
   export class DirectionalLight {
     constructor(color?: any, intensity?: number);
     position: { x: number; y: number; z: number; set(x: number, y: number, z: number): void };
   }
-  
+
   export class Color {
     constructor(color?: any);
     set(color: any): Color;
   }
-  
+
   export class Vector2 {
     constructor(x?: number, y?: number);
     x: number;
     y: number;
   }
-  
+
   export class Vector3 {
     constructor(x?: number, y?: number, z?: number);
     x: number;
     y: number;
     z: number;
   }
-  
+
   export class Object3D {
     position: { x: number; y: number; z: number; set(x: number, y: number, z: number): void };
     rotation: { x: number; y: number; z: number; set(x: number, y: number, z: number): void };
@@ -118,11 +118,11 @@ declare module 'three' {
     remove(...object: any[]): void;
     dispose?(): void;
   }
-  
+
   // Export the THREE namespace as default
   const THREE: typeof _THREE;
   export default THREE;
-  
+
   // Export example classes
   export * from 'three/examples/jsm/postprocessing/EffectComposer';
   export * from 'three/examples/jsm/postprocessing/RenderPass';

@@ -1,4 +1,5 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
+import { log } from '../lib/logger.js';
 
 export const useAudioAnalyzer = (
   fftSize: number,
@@ -58,7 +59,7 @@ export const useAudioAnalyzer = (
       setIsMicEnabled(true);
       analyze();
     } catch (err) {
-      console.error('Error accessing microphone:', err);
+      log('error', 'Error accessing microphone', { error: String(err) });
       if (err instanceof Error) {
         if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
           setError('Microphone access was denied. Please allow microphone access in your browser settings.');
