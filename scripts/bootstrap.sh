@@ -9,8 +9,10 @@ ensure_node_version
 
 pushd "$ROOT_DIR" > /dev/null
 npm ci
-npx playwright install --with-deps
-npm exec husky install >/dev/null
+if ! npx playwright install --with-deps; then
+  echo "[bootstrap] Playwright dependency installation failed; continuing without browser provisioning." >&2
+fi
+node ./scripts/configure-hooks.mjs >/dev/null
 
 git config commit.template .gitmessage
 popd > /dev/null
