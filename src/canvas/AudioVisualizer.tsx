@@ -1,3 +1,7 @@
+/*
+ * Copyright 2025 Lexsight LLC
+ * SPDX-License-Identifier: MPL-2.0
+ */
 import Scene from './Scene.js';
 import type { SceneControl } from '../schema/scene-control.mjs';
 

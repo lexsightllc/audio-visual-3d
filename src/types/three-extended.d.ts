@@ -1,3 +1,7 @@
+/*
+ * Copyright 2025 Lexsight LLC
+ * SPDX-License-Identifier: MPL-2.0
+ */
 // Extend the THREE global namespace
 declare module 'three' {
   // Re-export everything from three

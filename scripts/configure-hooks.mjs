@@ -1,4 +1,8 @@
 #!/usr/bin/env node
+/*
+ * Copyright 2025 Lexsight LLC
+ * SPDX-License-Identifier: MPL-2.0
+ */
 import { existsSync } from 'node:fs';
 import { chmodSync } from 'node:fs';
 import { dirname, join } from 'node:path';

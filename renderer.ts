@@ -1,3 +1,7 @@
+/*
+ * Copyright 2025 Lexsight LLC
+ * SPDX-License-Identifier: MPL-2.0
+ */
 import * as THREE from 'three';
 
 export function createRenderer(canvas: HTMLCanvasElement) {

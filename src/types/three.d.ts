@@ -1,3 +1,7 @@
+/*
+ * Copyright 2025 Lexsight LLC
+ * SPDX-License-Identifier: MPL-2.0
+ */
 // This file provides type declarations for Three.js and its extensions
 
 declare module 'three' {

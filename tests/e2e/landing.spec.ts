@@ -1,3 +1,7 @@
+/*
+ * Copyright 2025 Lexsight LLC
+ * SPDX-License-Identifier: MPL-2.0
+ */
 import { test, expect } from 'playwright/test';
 
 test.describe('Landing page experience', () => {

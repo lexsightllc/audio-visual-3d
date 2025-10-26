@@ -1,3 +1,7 @@
+/*
+ * Copyright 2025 Lexsight LLC
+ * SPDX-License-Identifier: MPL-2.0
+ */
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { log } from '../lib/logger.js';
 

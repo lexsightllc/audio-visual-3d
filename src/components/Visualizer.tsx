@@ -1,3 +1,7 @@
+/*
+ * Copyright 2025 Lexsight LLC
+ * SPDX-License-Identifier: MPL-2.0
+ */
 import React, { useRef, useEffect } from 'react';
 import * as THREE from 'three';
 import type { MeshStandardMaterial } from 'three';

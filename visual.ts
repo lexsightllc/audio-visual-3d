@@ -1,7 +1,7 @@
-/**
- * @license
+/*
+ * Copyright 2025 Lexsight LLC
  * SPDX-License-Identifier: MPL-2.0
-*/
+ */
 /* tslint:disable */
 
 import {LitElement, css, html} from 'lit';

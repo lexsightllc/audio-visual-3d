@@ -72,6 +72,7 @@ visualisations in an immersive scene.
 | `scripts/migrate.sh` / `.ps1` | Execute server-side migrations when defined. |
 | `scripts/clean.sh` / `.ps1` | Remove build artifacts and recreate staging directories. |
 | `scripts/check.sh` / `.ps1` | Orchestrate lint, typecheck, formatting check, unit, e2e, coverage, and security scans. |
+| `npm run license:headers` | Apply the canonical MPL-2.0 header to all tracked JS/TS sources (use `--check` to verify without modifying). |
 
 Each script is mirrored in PowerShell to keep macOS/Linux and Windows workflows
 in sync. The `Makefile` provides matching phony targets for integration with CI

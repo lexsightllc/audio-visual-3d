@@ -1,3 +1,7 @@
+/*
+ * Copyright 2025 Lexsight LLC
+ * SPDX-License-Identifier: MPL-2.0
+ */
 // Type definitions for Node.js
 // Reference: https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/node
 

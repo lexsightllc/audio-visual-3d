@@ -1,3 +1,7 @@
+/*
+ * Copyright 2025 Lexsight LLC
+ * SPDX-License-Identifier: MPL-2.0
+ */
 import { SceneControl, validateSceneControl } from '../schema/scene-control.mjs';
 import { log } from '../lib/logger.js';
 

@@ -21,6 +21,8 @@
     "evidence": "node scripts/evidence.mjs",
     "lint": "node scripts/run-eslint.mjs",
     "lint:fix": "node scripts/run-eslint.mjs --fix",
+    "license:headers": "node scripts/license-headers.mjs",
+    "license:headers:check": "node scripts/license-headers.mjs --check",
     "format": "node scripts/run-prettier.mjs --fix",
     "format:check": "node scripts/run-prettier.mjs --check",
     "typecheck": "tsc --noEmit",

@@ -1,3 +1,7 @@
+/*
+ * Copyright 2025 Lexsight LLC
+ * SPDX-License-Identifier: MPL-2.0
+ */
 declare module 'visual-controls' {
   export interface VisualControlState {
     arousal: number;
